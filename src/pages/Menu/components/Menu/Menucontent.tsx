@@ -71,15 +71,15 @@ const MenuContent = () => {
                 </p>
               </StaggerItem>
             </Stagger>
-            <div className="relative hidden md:block" aria-hidden="true">
-              <span className="absolute inset-0 translate-x-2 translate-y-2 rounded-t-[7rem] rounded-b-2xl border border-brass/70" />
+            <div className="relative hidden w-44 p-2.5 md:block lg:w-52" aria-hidden="true">
+              <span className="arch-frame pointer-events-none absolute inset-0 border border-brass/60" />
               <img
                 src={heroDish}
                 alt=""
                 width={1024}
                 height={1024}
                 decoding="async"
-                className="relative aspect-[4/5] w-44 rounded-t-[7rem] rounded-b-2xl object-cover shadow-layered lg:w-52 lg:rounded-t-[8rem]"
+                className="arch-shape relative aspect-[4/5] w-full object-cover shadow-layered"
               />
             </div>
           </div>
