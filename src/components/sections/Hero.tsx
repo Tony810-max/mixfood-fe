@@ -10,6 +10,7 @@ import { motion, useScroll, useTransform } from "framer-motion";
 import { useRef } from "react";
 import { Link } from "react-router-dom";
 import { DishMarquee } from "./DishMarquee";
+import { HeroBotanical, HeroFlavourSeal, HeroSteam } from "./HeroAccents";
 
 /**
  * Arched dish photograph inside a concentric brass ring (equal gap on every side).
@@ -19,12 +20,13 @@ import { DishMarquee } from "./DishMarquee";
  */
 const HeroFigure = () => {
   const { t } = useLanguage();
-    const figureRef = useRef<HTMLElement>(null);
+  const figureRef = useRef<HTMLElement>(null);
   const { scrollYProgress } = useScroll({ target: figureRef, offset: ["start end", "end start"] });
   const parallaxY = useTransform(scrollYProgress, [0, 1], [-16, 16]);
 
   return (
     <figure ref={figureRef} className="arch-enter relative mx-auto w-full max-w-md justify-self-center lg:max-w-[28rem]">
+      <HeroBotanical />
       <span aria-hidden="true" className="arch-frame arch-ring-enter pointer-events-none absolute inset-0 border border-brass/60" />
       <div className="p-2.5">
         <div className="arch-shape relative aspect-[4/5] overflow-hidden shadow-layered">
@@ -39,6 +41,7 @@ const HeroFigure = () => {
               className="size-full object-cover"
             />
           </motion.div>
+          <HeroSteam />
           <div aria-hidden="true" className="pointer-events-none absolute inset-0 bg-gradient-to-t from-primary/90 via-primary/25 to-transparent" />
           <figcaption className="absolute inset-x-0 bottom-0 p-6 text-primary-foreground sm:p-8">
             <p className="eyebrow-on-dark mb-2">{t.dishSpecialty}</p>
@@ -47,6 +50,7 @@ const HeroFigure = () => {
           </figcaption>
         </div>
       </div>
+      <HeroFlavourSeal />
     </figure>
   );
 };
