@@ -10,14 +10,10 @@ interface DishListProps {
 const DishList = ({ duplicate = false }: DishListProps) => (
   <ul
     aria-hidden={duplicate ? true : undefined}
-    className={
-      duplicate
-        ? "flex shrink-0 items-center motion-reduce:hidden"
-        : "flex shrink-0 items-center motion-reduce:flex-wrap motion-reduce:justify-center motion-reduce:gap-y-1"
-    }
+    className="flex shrink-0 items-center"
   >
     {THAI_DISHES.map((dish) => (
-      <li key={dish.href} className="flex items-center motion-reduce:last:[&>span]:hidden">
+      <li key={dish.href} className="flex items-center">
         <Link
           to={dish.href}
           tabIndex={duplicate ? -1 : undefined}
@@ -33,15 +29,15 @@ const DishList = ({ duplicate = false }: DishListProps) => (
 
 /**
  * Slow marquee of the existing signature dishes (same list and links as the footer).
- * Pauses on hover and keyboard focus; with reduced motion it is a static, wrapping list.
+ * Always runs (product decision: it ignores the OS reduced-motion setting); pauses on hover and keyboard focus.
  */
 export const DishMarquee = () => {
   const { t } = useLanguage();
 
   return (
     <nav aria-label={t.footerSpecialtyDishes} className="group/marquee border-t border-border/70">
-      <div className="marquee-mask overflow-hidden motion-reduce:[mask-image:none] motion-reduce:[-webkit-mask-image:none]">
-        <div className="flex w-max motion-safe:animate-marquee motion-safe:group-focus-within/marquee:[animation-play-state:paused] motion-safe:group-hover/marquee:[animation-play-state:paused] motion-reduce:w-full motion-reduce:justify-center">
+      <div className="marquee-mask overflow-hidden">
+        <div className="marquee-track flex w-max animate-marquee group-focus-within/marquee:[animation-play-state:paused] group-hover/marquee:[animation-play-state:paused]">
           <DishList />
           <DishList duplicate />
         </div>

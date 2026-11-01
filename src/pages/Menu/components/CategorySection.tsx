@@ -31,7 +31,7 @@ const CategorySection = ({
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
-    document.getElementById(category.id)?.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' });
+    document.getElementById(category.id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
 
   return (

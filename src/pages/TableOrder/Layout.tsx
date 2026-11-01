@@ -88,7 +88,7 @@ export default function TableOrderLayout() {
   };
 
   return (
-    <MotionConfig reducedMotion="user">
+    <MotionConfig reducedMotion="never">
       <div className="relative mx-auto flex h-dvh max-w-lg flex-col overflow-hidden bg-background shadow-layered-hover">
         <header className="z-20 shrink-0 bg-primary px-4 pb-3 text-primary-foreground pt-safe-top">
           <div className="flex items-center justify-between gap-4">

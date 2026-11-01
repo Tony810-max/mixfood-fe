@@ -388,7 +388,7 @@ html {
     transition: transform 200ms var(--easing-mix);
   }
 
-  @media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  @media (hover: hover) {
     .btn-shine:hover:not(:disabled, [aria-disabled="true"])::after {
       transform: translateX(300%) skewX(-18deg);
       transition: transform 700ms var(--easing-mix);
@@ -418,14 +418,7 @@ html {
   }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  html { scroll-behavior: auto; }
-  *, *::before, *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-  }
-}
+/* Product decision: animations ignore the OS reduced-motion setting, so there is no reduce override here. */
 
 /* Hero arch entrance: CSS only, always ends in the plain final state. */
 @keyframes arch-in {
@@ -438,7 +431,7 @@ html {
   to { opacity: 1; }
 }
 
-@media (prefers-reduced-motion: no-preference) {
+@media all {
   .arch-enter { animation: arch-in 800ms var(--easing-mix) 100ms both; }
   .arch-ring-enter { animation: arch-ring-in 600ms var(--easing-mix) 500ms both; }
 }

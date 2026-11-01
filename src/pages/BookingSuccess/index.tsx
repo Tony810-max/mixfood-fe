@@ -41,7 +41,7 @@ const BookingSuccess = () => {
     : [];
 
   return (
-    <MotionConfig reducedMotion="user">
+    <MotionConfig reducedMotion="never">
       <div className="flex min-h-screen flex-col bg-background">
         <Header />
         <main className="flex flex-1 items-center justify-center px-4 pb-14 pt-24 md:pt-28">

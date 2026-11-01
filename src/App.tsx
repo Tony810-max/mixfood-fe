@@ -92,7 +92,7 @@ const App = () => (
         <AuthProvider>
           <LanguageProvider>
             <TooltipProvider>
-            <MotionConfig reducedMotion="user">
+            <MotionConfig reducedMotion="never">
               <Sonner richColors position="top-center" />
               <BlockedUserToast />
               <BrowserRouter>

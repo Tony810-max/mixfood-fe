@@ -116,7 +116,7 @@ const ThaiDishHighlight = () => {
                         <span className="size-14 shrink-0 overflow-hidden rounded-xl bg-secondary sm:size-16">
                           <img src={entry.image} alt="" width={64} height={64} loading="lazy" decoding="async" className="size-full object-cover transition-transform duration-500 group-hover:scale-[1.04]" />
                         </span>
-                        <span className="min-w-0 flex-1 transition-transform duration-200 ease-[cubic-bezier(0.2,0.8,0.2,1)] motion-safe:group-hover:translate-x-1">
+                        <span className="min-w-0 flex-1 transition-transform duration-200 ease-[cubic-bezier(0.2,0.8,0.2,1)] group-hover:translate-x-1">
                           <span className={cn("block font-serif text-lg font-semibold leading-snug sm:text-xl", isActive ? "text-primary" : "text-foreground")}>{entry.name}</span>
                           <span className="mt-1 block text-sm text-muted-foreground">{entry.subtitle}</span>
                         </span>
@@ -124,7 +124,7 @@ const ThaiDishHighlight = () => {
                         <ArrowUpRight
                           aria-hidden="true"
                           className={cn(
-                            "size-5 shrink-0 transition-transform duration-200 ease-[cubic-bezier(0.2,0.8,0.2,1)] motion-safe:group-hover:-translate-y-0.5 motion-safe:group-hover:translate-x-0.5 motion-safe:group-hover:rotate-12",
+                            "size-5 shrink-0 transition-transform duration-200 ease-[cubic-bezier(0.2,0.8,0.2,1)] group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:rotate-12",
                             isActive ? "text-primary" : "text-muted-foreground",
                           )}
                         />

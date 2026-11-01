@@ -1,4 +1,4 @@
-import { animate, useInView, useReducedMotion } from "framer-motion";
+import { animate, useInView } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 import { EASE_MIX } from "./Reveal";
 
@@ -21,7 +21,7 @@ const format = (n: number, pad: number) => String(Math.round(n)).padStart(pad, "
  * reduced motion or a missing IntersectionObserver shows the final value immediately.
  */
 export function CountUp({ value, from, pad = 0, duration = 0.8, className }: CountUpProps) {
-  const reduce = useReducedMotion();
+  const reduce = false; // product decision: animations ignore the OS reduced-motion setting
   const ref = useRef<HTMLSpanElement>(null);
   const inView = useInView(ref, { once: true });
   const [initialText] = useState(() => format(from ?? value, pad));

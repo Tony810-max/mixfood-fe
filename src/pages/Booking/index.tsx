@@ -13,7 +13,7 @@ const Booking = () => {
   const ui = useUiText()
 
   return (
-    <MotionConfig reducedMotion="user">
+    <MotionConfig reducedMotion="never">
       <div className="min-h-screen bg-background">
         <Header />
         <main className="pb-16 pt-24 md:pt-32">

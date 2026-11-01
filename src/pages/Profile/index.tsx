@@ -30,7 +30,7 @@ const ProfilePage = () => {
   const cancelReservation = useCancelReservation();
 
   return (
-    <MotionConfig reducedMotion="user">
+    <MotionConfig reducedMotion="never">
     <div className="min-h-screen bg-background">
       <Header />
       <main className="min-h-[calc(100vh-80px)] pt-20 md:pt-24">

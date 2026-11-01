@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { useLanguage, useUiText } from "@/contexts/LanguageContext";
 import { INFORMATION_RESTAURANT, ROUTES } from "@/utils/const";
 import { ArrowDown, ArrowUpRight, Clock3, MapPin } from "lucide-react";
-import { motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
+import { motion, useScroll, useTransform } from "framer-motion";
 import { useRef } from "react";
 import { Link } from "react-router-dom";
 import { DishMarquee } from "./DishMarquee";
@@ -19,8 +19,7 @@ import { DishMarquee } from "./DishMarquee";
  */
 const HeroFigure = () => {
   const { t } = useLanguage();
-  const reduce = useReducedMotion();
-  const figureRef = useRef<HTMLElement>(null);
+    const figureRef = useRef<HTMLElement>(null);
   const { scrollYProgress } = useScroll({ target: figureRef, offset: ["start end", "end start"] });
   const parallaxY = useTransform(scrollYProgress, [0, 1], [-16, 16]);
 
@@ -29,7 +28,7 @@ const HeroFigure = () => {
       <span aria-hidden="true" className="arch-frame arch-ring-enter pointer-events-none absolute inset-0 border border-brass/60" />
       <div className="p-2.5">
         <div className="arch-shape relative aspect-[4/5] overflow-hidden shadow-layered">
-          <motion.div className="absolute inset-x-0 -inset-y-5 will-change-transform" style={reduce ? undefined : { y: parallaxY }}>
+          <motion.div className="absolute inset-x-0 -inset-y-5 will-change-transform" style={{ y: parallaxY }}>
             <img
               src={heroDish}
               alt={t.heroTomYum}

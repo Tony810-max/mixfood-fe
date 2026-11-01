@@ -1,6 +1,5 @@
 import {
   motion,
-  useReducedMotion,
   type Variants,
 } from "framer-motion";
 import {
@@ -76,7 +75,7 @@ function useInViewOnce(ref: RefObject<HTMLElement | null>, amount: number): bool
  */
 function useRevealState(onMount: boolean) {
   const ref = useRef<HTMLElement | null>(null);
-  const reduce = useReducedMotion();
+  const reduce = false; // product decision: animations ignore the OS reduced-motion setting
   const [instant, setInstant] = useState(false);
   const inView = useInViewOnce(ref, 0.15);
 
@@ -166,7 +165,7 @@ interface StaggerItemProps {
 
 /** Child of `Stagger`. Falls back to a plain element when motion is reduced. */
 export function StaggerItem({ as = "div", className, children }: StaggerItemProps) {
-  const reduce = useReducedMotion();
+  const reduce = false; // product decision: animations ignore the OS reduced-motion setting
   const { y } = useContext(StaggerContext);
 
   if (reduce) return createElement(as, { className }, children);

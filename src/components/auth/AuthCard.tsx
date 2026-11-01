@@ -14,7 +14,7 @@ interface AuthCardProps {
  */
 export const AuthCard = ({ children, className }: AuthCardProps) => {
   return (
-    <MotionConfig reducedMotion="user">
+    <MotionConfig reducedMotion="never">
       <div className={cn("min-h-screen bg-background", className)}>
         <main className="flex min-h-screen items-center justify-center px-4 pb-12 pt-24 sm:pt-28">
           <div className="w-full max-w-md">
