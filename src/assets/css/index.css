@@ -424,12 +424,9 @@ html {
   to { transform: translateX(-50%); }
 }
 
+/* This decorative strip stays automatic across pointer, focus and OS motion settings. */
 .marquee-track {
   animation: dish-marquee-scroll 105s linear infinite;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .marquee-track { animation: none; }
 }
 
 /* Hero arch entrance: CSS only, always ends in the plain final state. */

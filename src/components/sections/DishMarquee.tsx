@@ -30,15 +30,15 @@ const DishList = ({ duplicate = false }: DishListProps) => (
 /**
  * Slow marquee of the existing signature dishes (same list and links as the footer).
  * Two equally sized groups keep the loop filled even on wide screens.
- * Pauses on hover/focus and stays static when reduced motion is requested.
+ * Keeps moving on hover/focus and across system motion preferences.
  */
 export const DishMarquee = () => {
   const { t } = useLanguage();
 
   return (
-    <nav aria-label={t.footerSpecialtyDishes} className="group/marquee border-t border-border/70">
+    <nav aria-label={t.footerSpecialtyDishes} className="border-t border-border/70">
       <div className="marquee-mask overflow-hidden">
-        <div className="marquee-track flex w-max group-focus-within/marquee:[animation-play-state:paused] group-hover/marquee:[animation-play-state:paused]">
+        <div className="marquee-track flex w-max">
           {[false, true].map((duplicate) => (
             <div key={String(duplicate)} aria-hidden={duplicate ? true : undefined} className="flex min-w-[100vw] shrink-0 justify-around">
               <DishList duplicate={duplicate} />
