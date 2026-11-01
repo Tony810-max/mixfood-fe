@@ -1,4 +1,3 @@
-
 import { useUiText } from '@/contexts/LanguageContext';
 import {
     InputGroup,
@@ -15,21 +14,22 @@ interface SearchContentProps {
 
 export default function SearchContent({ value, onSearchChange }: SearchContentProps) {
   const ui = useUiText();
-    const { lang, t } = useLanguage()
+    const { t } = useLanguage()
 
     return (
-        <InputGroup className="h-11 rounded-full bg-card">
-            <InputGroupInput 
-                placeholder={t.menuSearchPlaceholder} 
+        <InputGroup className="h-11 rounded-xl border-input bg-card shadow-sm has-[[data-slot=input-group-control]:focus-visible]:border-primary has-[[data-slot=input-group-control]:focus-visible]:ring-2 has-[[data-slot=input-group-control]:focus-visible]:ring-primary/20">
+            <InputGroupInput
+                type="search"
+                placeholder={t.menuSearchPlaceholder}
                 aria-label={t.menuSearchPlaceholder}
-                className="focus-visible:ring-offset-0 focus-visible:border-input"
+                className="h-11 text-base focus-visible:ring-0 focus-visible:ring-offset-0 md:text-sm [&::-webkit-search-cancel-button]:appearance-none"
                 value={value}
                 onChange={(e) => onSearchChange?.(e.target.value)}
             />
             <InputGroupAddon>
-                <Search />
+                <Search aria-hidden="true" />
             </InputGroupAddon>
-            {value && <InputGroupAddon align="inline-end"><button type="button" onClick={() => onSearchChange?.("")} aria-label={lang === "vn" ? ui("Xóa tìm kiếm") : ui("Clear search")} className="grid h-9 w-9 place-items-center rounded-full hover:bg-secondary"><X className="h-4 w-4" /></button></InputGroupAddon>}
+            {value && <InputGroupAddon align="inline-end"><button type="button" onClick={() => onSearchChange?.("")} aria-label={ui("Clear search")} className="grid size-9 place-items-center rounded-lg text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"><X aria-hidden="true" className="size-4" /></button></InputGroupAddon>}
         </InputGroup>
     )
 }

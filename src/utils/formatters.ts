@@ -31,19 +31,23 @@ export const formatVerificationCode = (value: string): string => {
 };
 
 /**
- * Format currency in VND
+ * Canonical VND amount formatter: number followed by `đ`, no space.
+ * VI: `185.000đ`, EN: `185,000đ`.
  */
-export const formatCurrency = (amount: number): string => {
+export const formatVND = (amount: number): string => {
+  const value = Number.isFinite(amount) ? amount : 0;
   try {
-    return new Intl.NumberFormat(getUiLocale(), {
-      style: 'currency',
-      currency: 'VND',
-    }).format(amount);
+    return `${new Intl.NumberFormat(getUiLocale(), { maximumFractionDigits: 0 }).format(value)}đ`;
   } catch (error) {
     logger.error('Failed to format currency', error);
-    return `${amount} đ`;
+    return `${value}đ`;
   }
 };
+
+/**
+ * Format currency in VND (alias of formatVND)
+ */
+export const formatCurrency = formatVND;
 
 /**
  * Format number with commas

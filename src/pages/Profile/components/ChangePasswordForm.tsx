@@ -1,8 +1,10 @@
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { cn } from '@/lib/utils';
 import { type ChangePasswordFormData } from '@/lib/validation';
-import { Lock } from 'lucide-react';
+import { Loader2, Lock } from 'lucide-react';
+import { ProfileSection } from './ProfileSection';
 
 interface ChangePasswordFormProps {
   formData: ChangePasswordFormData;
@@ -23,6 +25,8 @@ interface ChangePasswordFormProps {
   };
 }
 
+const invalidClass = 'border-destructive focus-visible:border-destructive focus-visible:ring-destructive/20';
+
 export const ChangePasswordForm = ({
   formData,
   errors,
@@ -32,63 +36,66 @@ export const ChangePasswordForm = ({
   labels,
 }: ChangePasswordFormProps) => {
   return (
-    <div className="rounded-2xl border border-primary/25 bg-card/95 p-6 shadow-layered backdrop-blur-sm">
-      <div className="flex items-center gap-3 mb-6">
-        <div className="rounded-lg bg-primary/10 p-2">
-          <Lock className="h-5 w-5 text-primary" />
-        </div>
-        <h2 className="text-xl font-semibold text-foreground">{labels.title}</h2>
-      </div>
-
-      <form onSubmit={onSubmit} className="space-y-4">
-        <div className="space-y-2">
+    <ProfileSection id="profile-password-title" icon={Lock} title={labels.title}>
+      <form onSubmit={onSubmit} className="space-y-5" aria-busy={isLoading}>
+        <div className="space-y-1.5">
           <Label htmlFor="currentPassword">{labels.currentPassword}</Label>
           <Input
             id="currentPassword"
             type="password"
+            autoComplete="current-password"
             value={formData.currentPassword}
             onChange={(e) => onInputChange('currentPassword', e.target.value)}
             placeholder={labels.currentPasswordPlaceholder}
-            className={`h-11 border-primary/25 focus:border-primary focus:ring-primary ${errors.currentPassword ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : ''}`}
+            aria-invalid={errors.currentPassword ? true : undefined}
+            aria-describedby={errors.currentPassword ? 'currentPassword-error' : undefined}
+            className={cn(errors.currentPassword && invalidClass)}
           />
-          {errors.currentPassword && <p className="text-sm text-red-500">{errors.currentPassword}</p>}
+          {errors.currentPassword && <p id="currentPassword-error" role="alert" className="text-sm font-medium text-destructive">{errors.currentPassword}</p>}
         </div>
 
-        <div className="space-y-2">
+        <div className="space-y-1.5">
           <Label htmlFor="newPassword">{labels.newPassword}</Label>
           <Input
             id="newPassword"
             type="password"
+            autoComplete="new-password"
             value={formData.newPassword}
             onChange={(e) => onInputChange('newPassword', e.target.value)}
             placeholder={labels.newPasswordPlaceholder}
-            className={`h-11 border-primary/25 focus:border-primary focus:ring-primary ${errors.newPassword ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : ''}`}
+            aria-invalid={errors.newPassword ? true : undefined}
+            aria-describedby={errors.newPassword ? 'newPassword-error' : undefined}
+            className={cn(errors.newPassword && invalidClass)}
           />
-          {errors.newPassword && <p className="text-sm text-red-500">{errors.newPassword}</p>}
+          {errors.newPassword && <p id="newPassword-error" role="alert" className="text-sm font-medium text-destructive">{errors.newPassword}</p>}
         </div>
 
-        <div className="space-y-2">
+        <div className="space-y-1.5">
           <Label htmlFor="confirmPassword">{labels.confirmPassword}</Label>
           <Input
             id="confirmPassword"
             type="password"
+            autoComplete="new-password"
             value={formData.confirmPassword}
             onChange={(e) => onInputChange('confirmPassword', e.target.value)}
             placeholder={labels.confirmPasswordPlaceholder}
-            className={`h-11 border-primary/25 focus:border-primary focus:ring-primary ${errors.confirmPassword ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : ''}`}
+            aria-invalid={errors.confirmPassword ? true : undefined}
+            aria-describedby={errors.confirmPassword ? 'confirmPassword-error' : undefined}
+            className={cn(errors.confirmPassword && invalidClass)}
           />
-          {errors.confirmPassword && <p className="text-sm text-red-500">{errors.confirmPassword}</p>}
+          {errors.confirmPassword && <p id="confirmPassword-error" role="alert" className="text-sm font-medium text-destructive">{errors.confirmPassword}</p>}
         </div>
 
         <Button
           type="submit"
-          className="mt-2 h-11 w-full"
+          size="lg"
+          className="w-full active:scale-[0.98] sm:w-auto"
           disabled={isLoading}
         >
-          <Lock className="h-4 w-4 mr-2" />
+          {isLoading ? <Loader2 className="animate-spin" aria-hidden="true" /> : <Lock aria-hidden="true" />}
           {isLoading ? labels.saving : labels.save}
         </Button>
       </form>
-    </div>
+    </ProfileSection>
   );
 };

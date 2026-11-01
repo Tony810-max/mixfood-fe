@@ -1,7 +1,7 @@
 import Header from "@/components/layout/Header";
 import { useCancelReservation } from "@/hooks/api/useReservations";
 import { useReservations } from "@/hooks/useReservations";
-import { motion } from "framer-motion";
+import { MotionConfig, motion } from "framer-motion";
 import { ChangePasswordForm } from "./components/ChangePasswordForm";
 import { ProfileHeader } from "./components/ProfileHeader";
 import { ProfileSidebar } from "./components/ProfileSidebar";
@@ -26,18 +26,19 @@ const ProfilePage = () => {
     handleChangePassword,
     handleLogout,
   } = useProfile();
-  const { reservations, isLoading: reservationsLoading, stats, refreshReservations } = useReservations();
+  const { reservations, isLoading: reservationsLoading, error: reservationsError, stats, refreshReservations } = useReservations();
   const cancelReservation = useCancelReservation();
 
   return (
+    <MotionConfig reducedMotion="user">
     <div className="min-h-screen bg-background">
       <Header />
-      <div className="min-h-[calc(100vh-80px)] pt-[80px]">
+      <main className="min-h-[calc(100vh-80px)] pt-20 md:pt-24">
         <ProfileHeader user={user} />
 
         {/* Main Content */}
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="flex flex-col lg:flex-row gap-6 lg:gap-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+          <div className="flex flex-col lg:flex-row gap-5 lg:gap-8">
             {/* Sidebar Navigation */}
             <ProfileSidebar
               activeSection={activeSection}
@@ -53,12 +54,7 @@ const ProfilePage = () => {
             />
 
             {/* Content Area */}
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.5, delay: 0.4 }}
-              className="flex-1"
-            >
+            <div className="min-w-0 flex-1">
               {activeSection === "info" && (
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
@@ -119,6 +115,7 @@ const ProfilePage = () => {
                   <ReservationHistoryTable
                     reservations={reservations}
                     isLoading={reservationsLoading}
+                    error={reservationsError}
                     stats={stats}
                     onRefresh={refreshReservations}
                     onCancel={(id, reason) => cancelReservation.mutate({ id, reason })}
@@ -127,11 +124,12 @@ const ProfilePage = () => {
                   />
                 </motion.div>
               )}
-            </motion.div>
+            </div>
           </div>
         </div>
-      </div>
+      </main>
     </div>
+    </MotionConfig>
   );
 };
 

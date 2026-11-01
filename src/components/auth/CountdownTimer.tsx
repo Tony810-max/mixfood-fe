@@ -61,10 +61,11 @@ export const CountdownTimer = ({
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
+          role="timer"
           className="text-sm text-muted-foreground"
         >
           {t.countdownResendIn}{' '}
-          <span className="font-semibold text-orange-600 dark:text-orange-400">
+          <span className="font-semibold tabular-nums text-primary">
             {formatTime(seconds)}
           </span>
         </motion.div>
@@ -79,7 +80,7 @@ export const CountdownTimer = ({
             size="sm"
             onClick={handleResend}
             disabled={isResending}
-            className="text-orange-600 hover:text-orange-700 dark:text-orange-400 dark:hover:text-orange-300"
+            className="text-primary hover:bg-primary/10 hover:text-primary"
           >
             {isResending ? (
               <>

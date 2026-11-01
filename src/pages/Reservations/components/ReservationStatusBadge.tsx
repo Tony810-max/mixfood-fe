@@ -1,38 +1,20 @@
-import { RESERVATION_STATUS, STATUS_COLORS } from '@/constants';
-import { AlertCircle, CheckCircle, XCircle } from 'lucide-react';
+import { cn } from '@/lib/utils';
+import { STATUS_STYLES } from './reservationStatusStyle';
 
 interface ReservationStatusBadgeProps {
   status: string;
   label: string;
+  className?: string;
 }
 
-export const ReservationStatusBadge = ({ status, label }: ReservationStatusBadgeProps) => {
-  const statusConfig = {
-    [RESERVATION_STATUS.PENDING]: {
-      icon: AlertCircle,
-      colors: STATUS_COLORS.PENDING,
-    },
-    [RESERVATION_STATUS.CONFIRMED]: {
-      icon: CheckCircle,
-      colors: STATUS_COLORS.CONFIRMED,
-    },
-    [RESERVATION_STATUS.ARRIVED]: {
-      icon: CheckCircle,
-      colors: STATUS_COLORS.ARRIVED,
-    },
-    [RESERVATION_STATUS.CANCELLED]: {
-      icon: XCircle,
-      colors: STATUS_COLORS.CANCELLED,
-    },
-  };
+export const ReservationStatusBadge = ({ status, label, className }: ReservationStatusBadgeProps) => {
+  const style = STATUS_STYLES[status];
+  if (!style) return null;
 
-  const config = statusConfig[status as keyof typeof statusConfig];
-  if (!config) return null;
-
-  const Icon = config.icon;
+  const Icon = style.icon;
   return (
-    <div className={`flex items-center gap-2 px-3 py-1 ${config.colors.bg} ${config.colors.text} rounded-full text-sm font-medium`}>
-      <Icon className="h-4 w-4" />
+    <div className={cn('inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full border px-3 py-1 text-sm font-semibold', style.badge, className)}>
+      <Icon className="h-4 w-4 shrink-0" aria-hidden="true" />
       {label}
     </div>
   );

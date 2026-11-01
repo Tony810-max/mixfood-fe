@@ -37,26 +37,22 @@ const SocialShare: React.FC<SocialShareProps> = ({
     {
       name: 'Facebook',
       icon: Facebook,
-      url: `https://www.facebook.com/sharer/sharer.php?u=${shareUrl}`,
-      color: 'bg-blue-600 hover:bg-blue-700'
+      url: `https://www.facebook.com/sharer/sharer.php?u=${shareUrl}`,
     },
     {
       name: 'Twitter',
       icon: Twitter,
-      url: `https://twitter.com/intent/tweet?url=${shareUrl}&text=${shareTitle}&hashtags=ẩmThựcThái,ĐàNẵng,MixFood`,
-      color: 'bg-sky-500 hover:bg-sky-600'
+      url: `https://twitter.com/intent/tweet?url=${shareUrl}&text=${shareTitle}&hashtags=ẩmThựcThái,ĐàNẵng,MixFood`,
     },
     {
       name: 'Zalo',
       icon: MessageCircle,
-      url: `https://zalo.me/share?url=${shareUrl}&title=${shareTitle}&description=${shareDescription}`,
-      color: 'bg-blue-500 hover:bg-blue-600'
+      url: `https://zalo.me/share?url=${shareUrl}&title=${shareTitle}&description=${shareDescription}`,
     },
     {
       name: 'Instagram',
       icon: Instagram,
-      url: `https://www.instagram.com/`,
-      color: 'bg-primary-gradient hover:from-purple-600 hover:to-pink-600'
+      url: `https://www.instagram.com/`,
     }
   ];
 
@@ -98,7 +94,7 @@ const SocialShare: React.FC<SocialShareProps> = ({
                     key={social.name}
                     variant="outline"
                     size="sm"
-                    className={`flex items-center gap-2 text-white ${social.color} border-0`}
+                    className="flex items-center gap-2"
                     onClick={() => handleShare(social.name, social.url)}
                   >
                     <Icon className="h-4 w-4" />

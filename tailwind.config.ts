@@ -52,6 +52,14 @@ export default {
           DEFAULT: "hsl(var(--info))",
           foreground: "hsl(var(--info-foreground))",
         },
+        brass: {
+          DEFAULT: "hsl(var(--brass))",
+          strong: "hsl(var(--brass-strong))",
+        },
+        spice: {
+          DEFAULT: "hsl(var(--spice))",
+          foreground: "hsl(var(--spice-foreground))",
+        },
         muted: {
           DEFAULT: "hsl(var(--muted))",
           foreground: "hsl(var(--muted-foreground))",
@@ -93,10 +101,20 @@ export default {
           from: { height: "var(--radix-accordion-content-height)" },
           to: { height: "0" },
         },
+        "fade-up": {
+          from: { opacity: "0", transform: "translateY(12px)" },
+          to: { opacity: "1", transform: "translateY(0)" },
+        },
+        marquee: {
+          from: { transform: "translateX(0)" },
+          to: { transform: "translateX(-50%)" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
+        "fade-up": "fade-up 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) both",
+        marquee: "marquee 35s linear infinite",
       },
       backgroundImage: {
         "primary-gradient": "linear-gradient(135deg, hsl(var(--primary)), hsl(var(--accent)))",
@@ -115,3 +133,4 @@ export default {
   },
   plugins: [import("tailwindcss-animate")],
 } satisfies Config;
+

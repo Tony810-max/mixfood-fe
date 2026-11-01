@@ -6,7 +6,7 @@
 
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Ban, ClipboardList } from 'lucide-react';
+import { Ban, BellRing, CheckCircle2, ChefHat, ClipboardList, Clock3, ThumbsUp, UtensilsCrossed, type LucideIcon } from 'lucide-react';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -19,8 +19,28 @@ import {
 } from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { cn } from '@/lib/utils';
 import { useTableOrder } from './TableOrderContext';
-import { formatVND, ORDER_STATUS_STYLE } from './helpers';
+import { formatVND } from './helpers';
+
+// Kitchen progress, in order. COMPLETED counts as "everything done".
+const PROGRESS_STEPS = ['PENDING', 'CONFIRMED', 'PREPARING', 'READY', 'SERVED'] as const;
+
+// Token-based badge styles. Every status also carries an icon and a text label,
+// so colour is never the only signal.
+const STATUS_APPEARANCE: Record<string, { badge: string; icon: LucideIcon }> = {
+  PENDING: { badge: 'border-warning/40 bg-warning/15 text-warning-foreground', icon: Clock3 },
+  CONFIRMED: { badge: 'border-info/30 bg-info/10 text-info', icon: ThumbsUp },
+  PREPARING: { badge: 'border-primary/30 bg-primary/10 text-primary', icon: ChefHat },
+  READY: { badge: 'border-success/30 bg-success/10 text-success', icon: BellRing },
+  SERVED: { badge: 'border-brass/50 bg-secondary text-foreground', icon: UtensilsCrossed },
+  COMPLETED: { badge: 'border-border bg-muted text-muted-foreground', icon: CheckCircle2 },
+};
+
+function progressIndex(status: string) {
+  if (status === 'COMPLETED') return PROGRESS_STEPS.length - 1;
+  return Math.max(0, PROGRESS_STEPS.indexOf(status as (typeof PROGRESS_STEPS)[number]));
+}
 
 export default function OrdersPage() {
   const { t, lang } = useLanguage();
@@ -43,69 +63,92 @@ export default function OrdersPage() {
   };
 
   return (
-    <div className="p-4 space-y-3">
+    <div className="space-y-3 p-4">
       {nonCancelledOrders.length === 0 && (
-        <div className="text-center py-14 text-muted-foreground">
-          <ClipboardList className="mx-auto mb-3 h-10 w-10 opacity-40" />
-          <p className="text-sm">{t.noOrdersYet}</p>
-          <Button className="mt-4" size="sm" onClick={() => navigate('../menu', { relative: 'path' })}>
+        <div className="rounded-2xl border border-dashed border-border bg-card/60 px-6 py-14 text-center">
+          <ClipboardList className="mx-auto mb-3 h-10 w-10 text-brass-strong opacity-70" aria-hidden="true" />
+          <p className="text-sm text-muted-foreground">{t.noOrdersYet}</p>
+          <Button className="mt-4" onClick={() => navigate('../menu', { relative: 'path' })}>
             {t.viewMenu}
           </Button>
         </div>
       )}
-      {nonCancelledOrders.map((order) => {
-        const style = ORDER_STATUS_STYLE[order.status] ?? ORDER_STATUS_STYLE.PENDING;
-        return (
-          <div
-            key={order.id}
-            className={`rounded-2xl border border-l-4 ${style.border} border-border bg-card shadow-layered p-4 space-y-2`}
-          >
-            <div className="flex items-center justify-between">
-              <span className="text-sm font-bold text-foreground">{t.orderNumber.replace('{number}', String(order.id))}</span>
-              <div className="flex items-center gap-2">
-                <span className={`text-xs px-2.5 py-1 rounded-full font-semibold ${style.badge}`}>
+      <ul className="space-y-3" aria-live="polite">
+        {nonCancelledOrders.map((order) => {
+          const appearance = STATUS_APPEARANCE[order.status] ?? STATUS_APPEARANCE.PENDING;
+          const StatusIcon = appearance.icon;
+          const reached = progressIndex(order.status);
+          return (
+            <li
+              key={order.id}
+              className="space-y-3 rounded-2xl border border-border/80 bg-card p-4 shadow-layered"
+            >
+              <div className="flex items-center justify-between gap-3">
+                <span className="font-serif text-base font-semibold text-foreground">{t.orderNumber.replace('{number}', String(order.id))}</span>
+                <span className={cn('inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full border px-2.5 py-1 text-xs font-semibold', appearance.badge)}>
+                  <StatusIcon className="h-3.5 w-3.5" aria-hidden="true" />
                   {orderStatusLabels[order.status] ?? order.status}
                 </span>
+              </div>
+
+              {/* Kitchen progress timeline (decorative; the badge states the status in words) */}
+              <div aria-hidden="true" className="flex gap-1">
+                {PROGRESS_STEPS.map((step, index) => (
+                  <span
+                    key={step}
+                    className={cn(
+                      'h-1 flex-1 rounded-full transition-colors duration-300',
+                      index <= reached ? 'bg-primary' : 'bg-border',
+                    )}
+                  />
+                ))}
+              </div>
+
+              <ul className="space-y-1.5">
+                {order.items.map((item) => {
+                  const cancelled = item.status === 'CANCELLED';
+                  return (
+                    <li
+                      key={item.id}
+                      className={cn('flex gap-3 text-sm', cancelled ? 'text-muted-foreground line-through' : 'text-foreground')}
+                    >
+                      <span className="min-w-0 flex-1 break-words [overflow-wrap:anywhere]" title={`${item.quantity}× ${itemName(item)}${item.notes ? ` (${item.notes})` : ''}`}>
+                        <span className="tabular-nums">{item.quantity}×</span>{' '}
+                        {itemName(item)}
+                        {item.notes && (
+                          <span className="ml-1 text-xs italic text-muted-foreground">({item.notes})</span>
+                        )}
+                      </span>
+                      <span className="shrink-0 tabular-nums text-muted-foreground">{formatVND(item.subtotal)}</span>
+                    </li>
+                  );
+                })}
+              </ul>
+
+              <div className="flex items-center justify-between gap-3 border-t border-border/70 pt-3">
+                <div className="flex min-w-0 items-baseline gap-2 text-sm font-semibold">
+                  <span>{t.orderTotal}</span>
+                  <span className="shrink-0 font-serif text-base tabular-nums text-primary">{formatVND(order.total)}</span>
+                </div>
                 {order.status === 'PENDING' && (
                   <button
+                    type="button"
                     onClick={() => setCancelTarget(order.id)}
-                    className="flex min-h-9 items-center gap-1 rounded-lg px-2 text-xs font-medium text-destructive hover:bg-destructive/10"
+                    className="inline-flex min-h-11 items-center gap-1.5 rounded-xl px-3 text-sm font-semibold text-destructive transition-colors hover:bg-destructive/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                   >
-                    <Ban className="w-3.5 h-3.5" />
+                    <Ban className="h-4 w-4" aria-hidden="true" />
                     {t.cancel}
                   </button>
                 )}
               </div>
-            </div>
-            {order.items.map((item) => {
-              const cancelled = item.status === 'CANCELLED';
-              return (
-                <div
-                  key={item.id}
-                  className={`flex gap-3 text-sm ${cancelled ? 'text-muted-foreground/50 line-through' : 'text-muted-foreground'}`}
-                >
-                  <span className="min-w-0 flex-1 truncate" title={`${item.quantity}× ${itemName(item)}${item.notes ? ` (${item.notes})` : ''}`}>
-                    {item.quantity}×{' '}
-                    {itemName(item)}
-                    {item.notes && (
-                      <span className="italic ml-1 text-xs">({item.notes})</span>
-                    )}
-                  </span>
-                  <span className="shrink-0">{formatVND(item.subtotal)}</span>
-                </div>
-              );
-            })}
-            <div className="flex justify-between text-sm font-semibold pt-1 border-t border-border">
-              <span>{t.orderTotal}</span>
-              <span className="text-primary">{formatVND(order.total)}</span>
-            </div>
-          </div>
-        );
-      })}
+            </li>
+          );
+        })}
+      </ul>
       {nonCancelledOrders.length > 0 && (
-        <div className="rounded-2xl bg-muted p-4 flex justify-between font-bold sticky bottom-0">
+        <div className="sticky bottom-0 flex items-center justify-between gap-3 rounded-2xl border border-border/80 bg-secondary p-4 font-semibold shadow-layered">
           <span>{t.total}</span>
-          <span className="text-primary">{formatVND(sessionTotal)}</span>
+          <span className="shrink-0 font-serif text-lg tabular-nums text-primary">{formatVND(sessionTotal)}</span>
         </div>
       )}
 

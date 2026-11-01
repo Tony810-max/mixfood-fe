@@ -4,19 +4,18 @@ import { FooterLink } from './FooterLink';
 
 const ThaiDishes = () => {
   const { t } = useLanguage();
-  const thaiDishes = THAI_DISHES;
 
   return (
-    <div className="space-y-3 md:space-y-4">
-      <h4 className="text-base md:text-lg font-semibold">{t.footerSpecialtyDishes}</h4>
-      <ul className="space-y-1.5 md:space-y-2">
-        {thaiDishes.map((dish) => (
+    <nav aria-labelledby="footer-dishes" className="space-y-3">
+      <h2 id="footer-dishes" className="eyebrow-on-dark">{t.footerSpecialtyDishes}</h2>
+      <ul>
+        {THAI_DISHES.map((dish) => (
           <li key={dish.href}>
             <FooterLink to={dish.href}>{dish.name}</FooterLink>
           </li>
         ))}
       </ul>
-    </div>
+    </nav>
   );
 };
 

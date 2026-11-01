@@ -58,18 +58,18 @@ export const ReservationCard = ({
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3, delay: index * 0.05 }}
-        className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-2xl shadow-xl border border-orange-200 dark:border-orange-900/50 overflow-hidden"
+        className="bg-card rounded-2xl shadow-layered border border-border/80 overflow-hidden"
       >
         <div className="p-4 sm:p-6">
           <div className="flex flex-col lg:flex-row lg:items-start gap-4">
             {/* Status Badge - Mobile Top, Desktop Right */}
             <div className="lg:hidden flex justify-between items-start mb-2">
               <div className="flex-1 min-w-0 pr-2">
-                <h3 className="text-lg font-semibold text-foreground truncate">
+                <h3 className="text-lg font-semibold text-foreground truncate" title={reservation.name}>
                   {reservation.name}
                 </h3>
                 <p className="text-sm text-muted-foreground">
-                  {reservation.phone}
+                  <span className="block truncate" title={reservation.phone}>{reservation.phone}</span>
                 </p>
               </div>
               <ReservationStatusBadge status={reservation.status} label={getStatusLabel(reservation.status)} />
@@ -78,11 +78,11 @@ export const ReservationCard = ({
             {/* Main Content */}
             <div className="flex-1 min-w-0">
               <div className="hidden lg:flex items-start justify-between mb-4">
-                <div>
-                  <h3 className="text-xl font-semibold text-foreground mb-1">
+                <div className="min-w-0 flex-1 pr-3">
+                  <h3 className="break-words text-xl font-semibold text-foreground mb-1 [overflow-wrap:anywhere]">
                     {reservation.name}
                   </h3>
-                  <p className="text-sm text-muted-foreground">
+                  <p className="truncate text-sm text-muted-foreground" title={reservation.phone}>
                     {reservation.phone}
                   </p>
                 </div>
@@ -91,29 +91,29 @@ export const ReservationCard = ({
 
               {/* Reservation Details Grid */}
               <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
-                <div className="flex items-center gap-2 text-sm p-3 bg-orange-50 dark:bg-orange-900/20 rounded-lg">
-                  <Calendar className="h-4 w-4 text-orange-500 flex-shrink-0" />
+                <div className="flex items-center gap-2 text-sm p-3 bg-secondary/60 rounded-lg">
+                  <Calendar className="h-4 w-4 text-brass-strong flex-shrink-0" />
                   <div className="min-w-0">
                     <p className="text-xs text-muted-foreground">{labels.date}</p>
                     <p className="font-medium text-foreground truncate">{formatDate(reservation.reservationDate)}</p>
                   </div>
                 </div>
-                <div className="flex items-center gap-2 text-sm p-3 bg-orange-50 dark:bg-orange-900/20 rounded-lg">
-                  <Clock className="h-4 w-4 text-orange-500 flex-shrink-0" />
+                <div className="flex items-center gap-2 text-sm p-3 bg-secondary/60 rounded-lg">
+                  <Clock className="h-4 w-4 text-brass-strong flex-shrink-0" />
                   <div className="min-w-0">
                     <p className="text-xs text-muted-foreground">{labels.time}</p>
                     <p className="font-medium text-foreground">{reservation.reservationTime}</p>
                   </div>
                 </div>
-                <div className="flex items-center gap-2 text-sm p-3 bg-orange-50 dark:bg-orange-900/20 rounded-lg">
-                  <Users className="h-4 w-4 text-orange-500 flex-shrink-0" />
+                <div className="flex items-center gap-2 text-sm p-3 bg-secondary/60 rounded-lg">
+                  <Users className="h-4 w-4 text-brass-strong flex-shrink-0" />
                   <div className="min-w-0">
                     <p className="text-xs text-muted-foreground">{labels.guests}</p>
                     <p className="font-medium text-foreground">{reservation.numberOfGuests} {labels.guest}</p>
                   </div>
                 </div>
-                <div className="flex items-center gap-2 text-sm p-3 bg-orange-50 dark:bg-orange-900/20 rounded-lg">
-                  <Phone className="h-4 w-4 text-orange-500 flex-shrink-0" />
+                <div className="flex items-center gap-2 text-sm p-3 bg-secondary/60 rounded-lg">
+                  <Phone className="h-4 w-4 text-brass-strong flex-shrink-0" />
                   <div className="min-w-0">
                     <p className="text-xs text-muted-foreground">{labels.phone}</p>
                     <p className="font-medium text-foreground truncate">{reservation.phone}</p>
@@ -122,15 +122,15 @@ export const ReservationCard = ({
               </div>
 
               {reservation.note && (
-                <div className="mb-4 p-3 bg-amber-50 dark:bg-amber-900/20 rounded-lg border border-amber-200 dark:border-amber-900/50">
-                  <p className="text-sm text-amber-700 dark:text-amber-400">
+                <div className="mb-4 p-3 bg-warning/10 rounded-lg border border-warning/30">
+                  <p className="break-words text-sm text-foreground [overflow-wrap:anywhere]">
                     <span className="font-medium">{labels.note}:</span> {reservation.note}
                   </p>
                 </div>
               )}
 
               {reservation.status === RESERVATION_STATUS.CANCELLED && (
-                <div className="mb-4 rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700 dark:border-red-900/50 dark:bg-red-900/20 dark:text-red-300">
+                <div className="mb-4 rounded-lg border border-destructive/30 bg-destructive/10 p-3 break-words text-sm text-destructive [overflow-wrap:anywhere]">
                   <p>
                     <span className="font-medium">{labels.cancelledBy}:</span>{' '}
                     {reservation.cancelledBy
@@ -155,7 +155,7 @@ export const ReservationCard = ({
                 <Button
                   variant="outline"
                   size="sm"
-                  className="flex-1 lg:flex-none text-red-600 border-red-200 hover:text-white hover:bg-red-500 hover:border-red-500 dark:border-red-800 dark:hover:bg-red-700 transition-colors"
+                  className="flex-1 lg:flex-none text-destructive border-destructive/30 hover:text-destructive-foreground hover:bg-destructive hover:border-destructive transition-colors"
                   onClick={() => setShowCancelDialog(true)}
                   disabled={isCancelling}
                 >

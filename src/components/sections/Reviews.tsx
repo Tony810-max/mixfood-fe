@@ -1,9 +1,10 @@
-
-import { useUiText } from '@/contexts/LanguageContext';
-import { useLanguage } from "@/contexts/LanguageContext";
-import { motion } from "framer-motion";
+import { useSiteCopy } from "@/components/brand/copy";
+import { Stagger, StaggerItem } from "@/components/motion";
+import { useLanguage, useUiText } from "@/contexts/LanguageContext";
 import { Star } from "lucide-react";
+import { SectionHeading } from "./SectionHeading";
 
+/** Real guest comments, quoted from Google Maps. */
 const reviews = [
   {
     name: "Bảo Yến",
@@ -28,47 +29,44 @@ const reviews = [
 const Reviews = () => {
   const ui = useUiText();
   const { lang, t } = useLanguage();
+  const copy = useSiteCopy();
 
   return (
-    <section className="py-16 md:py-24 bg-secondary/50">
-      <div className="container mx-auto px-4 md:px-6">
-        <motion.h2
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-100px" }}
-          transition={{ duration: 0.6, ease: [0.2, 0.8, 0.2, 1] }}
-          className="font-serif text-2xl md:text-3xl lg:text-4xl font-bold text-foreground text-center mb-8 md:mb-16"
-        >
-          {t.reviews}
-        </motion.h2>
+    <section id="reviews" aria-labelledby="reviews-title" className="bg-background py-16 md:py-24">
+      <div className="page-container">
+        <SectionHeading
+          titleId="reviews-title"
+          eyebrow={copy.reviewsEyebrow}
+          title={t.reviews}
+          align="center"
+          className="mb-10 md:mb-14"
+        />
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 max-w-5xl mx-auto">
-          {reviews.map((review, i) => (
-            <motion.div
-              key={review.name}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-100px" }}
-              transition={{ duration: 0.5, delay: i * 0.1, ease: [0.2, 0.8, 0.2, 1] }}
-              className="bg-card rounded-2xl p-5 md:p-6 shadow-layered space-y-3 md:space-y-4"
-            >
-              <div className="flex items-start justify-between gap-3">
-                <div>
-                  <p className="font-semibold text-sm text-foreground">{review.name}</p>
+        <Stagger as="ul" className="mx-auto grid max-w-5xl grid-cols-1 gap-5 md:grid-cols-3 md:gap-6" stagger={0.09}>
+          {reviews.map((review) => (
+            <StaggerItem as="li" key={review.name} className="h-full">
+              <figure className="card-lift relative flex h-full flex-col rounded-2xl border border-border bg-card p-6 shadow-layered">
+                <span aria-hidden="true" className="absolute right-5 top-2 font-serif text-6xl leading-none text-brass/50">{"“"}</span>
+                <div className="flex gap-0.5" role="img" aria-label={ui("{rating} out of 5 stars", { rating: review.rating })}>
+                  {Array.from({ length: review.rating }).map((_, j) => (
+                    <Star key={j} aria-hidden="true" className="size-4 fill-spice text-spice" />
+                  ))}
                 </div>
-              </div>
-              <div className="flex gap-1" aria-label={ui('{rating} out of 5 stars', { rating: review.rating })}>
-                {Array.from({ length: review.rating }).map((_, j) => (
-                  <Star key={j} size={16} className="fill-primary text-primary" />
-                ))}
-              </div>
-              <p className="text-foreground/80 text-sm leading-relaxed">
-                {lang === "vn" ? review.vn : review.en}
-              </p>
-            </motion.div>
+                <blockquote className="mt-4 flex-1 text-base leading-7 text-foreground/85">
+                  {lang === "vn" ? review.vn : review.en}
+                </blockquote>
+                <figcaption className="mt-6 flex items-center gap-3 border-t border-border pt-4">
+                  <span aria-hidden="true" className="grid size-10 place-items-center rounded-full bg-accent font-serif text-base font-semibold text-primary">
+                    {review.name.charAt(0)}
+                  </span>
+                  <span className="text-sm font-semibold text-foreground">{review.name}</span>
+                </figcaption>
+              </figure>
+            </StaggerItem>
           ))}
-        </div>
-        <p className="mt-6 text-center text-xs text-muted-foreground">{ui("Nguồn đánh giá: Google Maps.") }</p>
+        </Stagger>
+
+        <p className="mt-8 text-center text-sm text-muted-foreground">{ui("Review source: Google Maps.")}</p>
       </div>
     </section>
   );

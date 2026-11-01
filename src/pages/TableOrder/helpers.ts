@@ -1,14 +1,10 @@
-import { getUiLocale } from '@/lib/localization';
 // ─── Shared helpers for TableOrder pages ──────────────────────────────────────
+export { formatVND } from '@/utils/formatters';
 
 export const API_BASE =
   import.meta.env.VITE_WS_URL ||
   import.meta.env.VITE_API_BASE_URL ||
   'http://localhost:3001';
-
-export function formatVND(n: number) {
-  return new Intl.NumberFormat(getUiLocale(), { style: 'currency', currency: 'VND' }).format(n);
-}
 
 export function generateIdempotencyKey() {
   return `${Date.now()}-${Math.random().toString(36).slice(2)}`;

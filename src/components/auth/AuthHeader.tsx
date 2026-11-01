@@ -10,21 +10,21 @@ interface AuthHeaderProps {
 export const AuthHeader = ({ title, subtitle, icon }: AuthHeaderProps) => {
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
+      initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
-      className="text-center mb-8"
+      transition={{ duration: 0.45, ease: [0.2, 0.8, 0.2, 1] }}
+      className="mb-6 text-center"
     >
       {icon && (
-        <div className="mb-6">
+        <div className="mb-5">
           {icon}
         </div>
       )}
-      <h1 className="text-3xl font-bold text-foreground mb-4">
+      <h1 className="font-serif text-2xl font-semibold text-balance text-foreground sm:text-3xl">
         {title}
       </h1>
       {subtitle && (
-        <p className="text-muted-foreground">
+        <p className="mx-auto mt-2 max-w-sm break-words text-sm leading-relaxed text-muted-foreground">
           {subtitle}
         </p>
       )}

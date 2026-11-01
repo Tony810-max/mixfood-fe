@@ -1,33 +1,32 @@
-import { ROUTES } from "@/utils/const";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { ROUTES } from "@/utils/const";
+import { Link } from "react-router-dom";
 import ContactInfo from "./Footer/ContactInfo";
 import QuickLinks from "./Footer/QuickLinks";
 import RestaurantInfo from "./Footer/RestaurantInfo";
-import { Link } from "react-router-dom";
+import ThaiDishes from "./Footer/ThaiDishes";
 
 const Footer = () => {
   const { t } = useLanguage();
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="bg-foreground text-background">
-      <div className="page-container py-10 md:py-14">
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 md:gap-8 lg:grid-cols-3">
+    <footer className="relative bg-primary text-primary-foreground">
+      <span aria-hidden="true" className="absolute inset-x-0 top-0 h-px bg-brass/70" />
+      <div className="page-container py-14 md:py-20">
+        <div className="grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-[1.4fr_0.8fr_0.9fr_1.3fr] lg:gap-12">
           <RestaurantInfo />
           <QuickLinks />
+          <ThaiDishes />
           <ContactInfo />
         </div>
 
         {/* Bottom Section */}
-        <div className="mt-8 border-t border-background/15 pt-6 md:pt-8">
-          <div className="flex flex-col md:flex-row justify-between items-center space-y-3 md:space-y-0">
-            <div className="text-background/60 text-xs md:text-sm">
-              {t.footerCopyright.replace("{year}", String(currentYear))}
-            </div>
-            <div className="flex space-x-4 text-xs text-background/60 md:space-x-6 md:text-sm">
-              <Link to={ROUTES.MENU} className="transition-colors hover:text-background">{t.menu}</Link>
-              <Link to={ROUTES.BOOKING} className="transition-colors hover:text-background">{t.reserveTable}</Link>
-            </div>
+        <div className="mt-12 flex flex-col items-start justify-between gap-4 border-t border-primary-foreground/15 pt-6 text-sm text-primary-foreground/75 md:flex-row md:items-center">
+          <p>{t.footerCopyright.replace("{year}", String(currentYear))}</p>
+          <div className="flex flex-wrap gap-x-6 gap-y-1">
+            <Link to={ROUTES.MENU} className="inline-flex min-h-11 items-center transition-colors hover:text-primary-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brass">{t.menu}</Link>
+            <Link to={ROUTES.BOOKING} className="inline-flex min-h-11 items-center transition-colors hover:text-primary-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brass">{t.reserveTable}</Link>
           </div>
         </div>
       </div>

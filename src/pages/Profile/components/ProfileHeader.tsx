@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { Calendar, Shield, User } from 'lucide-react';
+import { Calendar, Shield } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 
 interface ProfileHeaderProps {
@@ -17,57 +17,43 @@ export const ProfileHeader = ({ user }: ProfileHeaderProps) => {
     ? new Date(user.createdAt).getFullYear()
     : new Date().getFullYear();
 
+  const displayName = user?.name || t.headerUser;
+  const initial = displayName.trim().charAt(0).toLocaleUpperCase() || 'M';
+
   return (
-    <div className="relative overflow-hidden primary-action">
-      <div className="absolute inset-0 bg-black/5" />
-      <div className="absolute top-0 right-0 h-96 w-96 -translate-y-1/2 translate-x-1/2 rounded-full bg-white/15 blur-3xl" />
-      <div className="absolute bottom-0 left-0 h-80 w-80 -translate-x-1/2 translate-y-1/2 rounded-full bg-white/10 blur-3xl" />
-
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-12">
+    <div className="relative border-b border-border/70 bg-secondary/50">
+      <span aria-hidden="true" className="pointer-events-none absolute inset-x-0 bottom-0 h-px bg-brass/40" />
+      <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-10 lg:px-8">
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          className="flex flex-col sm:flex-row items-center sm:items-start gap-6"
+          transition={{ duration: 0.5, ease: [0.2, 0.8, 0.2, 1] }}
+          className="flex flex-col items-center gap-5 sm:flex-row sm:items-center sm:gap-6"
         >
-          {/* Avatar */}
-          <motion.div
-            initial={{ scale: 0, rotate: -180 }}
-            animate={{ scale: 1, rotate: 0 }}
-            transition={{ delay: 0.2, type: "spring", stiffness: 200, damping: 20 }}
-            className="relative shrink-0"
+          {/* Avatar: initial on basil, brass ring */}
+          <div
+            aria-hidden="true"
+            className="grid h-20 w-20 shrink-0 place-items-center rounded-full bg-primary font-serif text-3xl font-semibold text-primary-foreground ring-1 ring-brass/70 ring-offset-4 ring-offset-secondary sm:h-24 sm:w-24 sm:text-4xl"
           >
-            <div className="absolute inset-0 rounded-full bg-white blur-xl opacity-25" />
-            <div className="relative h-24 w-24 rounded-full border-4 border-white/85 bg-white/15 p-1 shadow-2xl sm:h-28 sm:w-28">
-              <div className="flex h-full w-full items-center justify-center rounded-full bg-white/15">
-                <User className="h-12 w-12 text-primary-foreground sm:h-14 sm:w-14" />
-              </div>
-            </div>
-            <div className="absolute bottom-1 right-1 w-5 h-5 bg-green-500 rounded-full border-4 border-white dark:border-slate-900" />
-          </motion.div>
+            {initial}
+          </div>
 
-          {/* User Info */}
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.35, duration: 0.5 }}
-            className="text-center sm:text-left flex-1 min-w-0"
-          >
-            <h1 className="mb-1 truncate text-3xl font-bold text-primary-foreground sm:text-4xl">
-              {user?.name || t.headerUser}
+          <div className="w-full min-w-0 flex-1 text-center sm:w-auto sm:text-left">
+            <h1 className="truncate font-serif text-3xl font-semibold text-foreground sm:text-4xl" title={displayName}>
+              {displayName}
             </h1>
-            <p className="mb-4 truncate text-base text-primary-foreground/85">{user?.email}</p>
-            <div className="flex flex-wrap items-center justify-center gap-3 text-sm text-primary-foreground/85 sm:justify-start">
-              <div className="flex items-center gap-1.5">
-                <Calendar className="h-3.5 w-3.5 shrink-0 text-primary-foreground" />
+            <p className="mt-1 truncate text-base text-muted-foreground" title={user?.email}>{user?.email}</p>
+            <ul className="mt-4 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-sm text-foreground/80 sm:justify-start">
+              <li className="flex items-center gap-1.5">
+                <Calendar className="h-4 w-4 shrink-0 text-brass-strong" aria-hidden="true" />
                 <span>{t.profileMemberSince} {memberSince}</span>
-              </div>
-              <div className="flex items-center gap-1.5">
-                <Shield className="h-3.5 w-3.5 shrink-0 text-primary-foreground" />
+              </li>
+              <li className="flex items-center gap-1.5">
+                <Shield className="h-4 w-4 shrink-0 text-brass-strong" aria-hidden="true" />
                 <span>{t.profileVerifiedAccount}</span>
-              </div>
-            </div>
-          </motion.div>
+              </li>
+            </ul>
+          </div>
         </motion.div>
       </div>
     </div>

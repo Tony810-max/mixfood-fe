@@ -10,27 +10,27 @@ interface Dish {
 const dishes: Dish[] = [
   {
     nameKey: "padThai",
-    price: "145,000 VND",
+    price: "145,000đ",
     image: "/images/pad-thai.webp",
   },
   {
     nameKey: "greenCurry",
-    price: "165,000 VND",
+    price: "165,000đ",
     image: "/image-blank.webp",
   },
   {
     nameKey: "tomYum",
-    price: "175,000 VND",
+    price: "175,000đ",
     image: "/images/tomyum-hs.webp",
   },
   {
     nameKey: "somTum",
-    price: "95,000 VND",
+    price: "95,000đ",
     image: "/images/som-tam.webp",
   },
   {
     nameKey: "mangoRice",
-    price: "85,000 VND",
+    price: "85,000đ",
     image: "/images/xoi-xoai.webp",
   },
   {

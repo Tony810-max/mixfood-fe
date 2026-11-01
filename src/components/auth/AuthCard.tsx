@@ -1,4 +1,5 @@
 import { cn } from '@/lib/utils';
+import { MotionConfig } from 'framer-motion';
 import { ReactNode } from 'react';
 
 interface AuthCardProps {
@@ -6,17 +7,21 @@ interface AuthCardProps {
   className?: string;
 }
 
+/**
+ * Page shell for every auth screen: ivory paper, content centred under the
+ * fixed site header. MotionConfig makes all framer-motion children honour the
+ * visitor's reduced-motion preference.
+ */
 export const AuthCard = ({ children, className }: AuthCardProps) => {
   return (
-    <div className={cn(
-      "min-h-screen bg-gradient-to-br from-slate-50 via-orange-50/30 to-amber-50/50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950",
-      className
-    )}>
-      <div className="min-h-[calc(100vh-80px)] pt-[80px] flex items-center justify-center px-4">
-        <div className="w-full max-w-md">
-          {children}
-        </div>
+    <MotionConfig reducedMotion="user">
+      <div className={cn("min-h-screen bg-background", className)}>
+        <main className="flex min-h-screen items-center justify-center px-4 pb-12 pt-24 sm:pt-28">
+          <div className="w-full max-w-md">
+            {children}
+          </div>
+        </main>
       </div>
-    </div>
+    </MotionConfig>
   );
 };

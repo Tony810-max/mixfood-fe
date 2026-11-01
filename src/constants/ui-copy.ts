@@ -70,4 +70,7 @@ export const uiCopy: Record<string, string> = {
   'Call Mix Food on 0905 473 728.': 'Bạn có thể liên hệ Mix Food qua số 0905 473 728.',
   'Please note vegetarian, allergy or spice requirements when ordering. Our team will confirm them with you.': 'Vui lòng ghi chú yêu cầu ăn chay, dị ứng hoặc mức độ cay khi đặt món. Nhà hàng sẽ hỗ trợ xác nhận lại.',
   'I did not understand. You can ask about the menu, opening hours, reservations, location or contact details.': 'Tôi chưa hiểu rõ câu hỏi. Bạn có thể hỏi về thực đơn, giờ mở cửa, đặt bàn, địa chỉ hoặc liên hệ nhà hàng.',
+  'Verification code': 'Mã xác nhận', 'Digit {number} of {total}': 'Chữ số {number} trên {total}',
+  'Your details': 'Thông tin của bạn', 'Reservation details': 'Chi tiết đặt bàn', 'Reservation summary': 'Tóm tắt đặt bàn', 'Sort reservations': 'Sắp xếp đặt bàn',
+  'Online': 'Trực tuyến', 'Offline': 'Mất kết nối',
 };

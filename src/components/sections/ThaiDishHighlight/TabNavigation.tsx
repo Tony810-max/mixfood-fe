@@ -10,10 +10,12 @@ const TabNavigation = ({ dishes, activeTab, setActiveTab }: TabNavigationProps) 
       {Object.entries(dishes).map(([key, dish]) => (
         <button
           key={key}
+          type="button"
           onClick={() => setActiveTab(key)}
+          aria-pressed={activeTab === key}
           className={`px-4 py-2.5 md:px-6 md:py-3 rounded-xl font-medium transition-all min-h-[44px] text-sm md:text-base ${activeTab === key
-            ? "bg-primary-gradient text-white shadow-md"
-            : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+            ? "primary-action text-primary-foreground shadow-sm"
+            : "bg-secondary text-foreground hover:bg-accent"
             }`}
         >
           {dish.name}

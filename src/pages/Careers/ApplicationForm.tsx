@@ -5,6 +5,7 @@ import { RECRUITMENT_ROLES, type Recruitment } from '@/constants/recruitment';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { NativeSelect } from '@/components/ui/native-select';
 import { Textarea } from '@/components/ui/textarea';
 import { CheckCircle2, Loader2, Send } from 'lucide-react';
 
@@ -59,16 +60,17 @@ export function ApplicationForm({ positions, selectedId, onSelect }: {
     }
   }
 
-  return <section id="ung-tuyen" aria-labelledby="application-title" className="mx-auto mt-12 max-w-3xl scroll-mt-28 rounded-3xl border border-primary/20 bg-card p-6 shadow-layered md:p-8">
-    <p className="text-xs font-semibold uppercase tracking-widest text-primary">{ui("Gia nhập Mix Food") }</p>
-    <h2 id="application-title" className="mt-2 font-serif text-3xl font-semibold">{ui("Gửi hồ sơ ứng tuyển") }</h2>
+  return <section id="ung-tuyen" aria-labelledby="application-title" className="relative mx-auto mt-12 max-w-3xl scroll-mt-28 rounded-2xl border border-border bg-card p-6 shadow-layered md:p-10">
+    <span aria-hidden="true" className="absolute inset-x-6 top-0 h-px bg-brass/70 md:inset-x-10" />
+    <p className="eyebrow">{ui("Gia nhập Mix Food") }</p>
+    <h2 id="application-title" className="mt-2 font-serif text-3xl font-semibold md:text-4xl">{ui("Gửi hồ sơ ứng tuyển") }</h2>
     <p className="mt-3 text-sm leading-6 text-muted-foreground">{ui("Điền thông tin bên dưới để quản lý liên hệ trao đổi công việc. Các mục có dấu * là bắt buộc.") }</p>
-    {sent && <div role="status" className="mt-6 flex gap-3 rounded-xl border border-emerald-600/30 bg-emerald-50 p-4 text-emerald-900 dark:bg-emerald-950 dark:text-emerald-100"><CheckCircle2 className="size-5 shrink-0" /><p>{ui("Đã nhận hồ sơ của bạn. Mix Food sẽ liên hệ qua số điện thoại hoặc email đã cung cấp.") }</p></div>}
+    {sent && <div role="status" className="mt-6 flex gap-3 rounded-xl border border-success/30 bg-success/10 p-4 text-success"><CheckCircle2 aria-hidden="true" className="size-5 shrink-0" /><p>{ui("Đã nhận hồ sơ của bạn. Mix Food sẽ liên hệ qua số điện thoại hoặc email đã cung cấp.") }</p></div>}
     <form onSubmit={submit} className="mt-6 space-y-5">
       <fieldset disabled={pending} className="space-y-5 disabled:opacity-70">
-        <div className="space-y-2"><Label htmlFor="application-position">{ui("Vị trí ứng tuyển *") }</Label><select id="application-position" name="positionId" required value={selectedId} onChange={(event) => onSelect(Number(event.target.value))} className="flex h-11 w-full rounded-md border border-input bg-background px-3 text-sm text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">{positions.map((job) => <option key={job.id} value={job.id}>{ui(RECRUITMENT_ROLES[job.position].vn)}</option>)}</select></div>
-        <div className="space-y-2"><Label htmlFor="application-employment">{ui('Employment type')} *</Label><select id="application-employment" name="employmentType" required value={employmentType} onChange={(event) => setPreferredType(event.target.value)} className="flex h-11 w-full rounded-md border border-input bg-background px-3 text-sm text-foreground">{employmentTypes.map((type) => <option key={type} value={type}>{ui(type === 'PART_TIME' ? 'Part-time' : 'Full-time')}</option>)}</select></div>
-        <div className="grid gap-5 sm:grid-cols-2">
+        <div className="space-y-2"><Label htmlFor="application-position">{ui("Vị trí ứng tuyển *") }</Label><NativeSelect id="application-position" name="positionId" required value={selectedId} onChange={(event) => onSelect(Number(event.target.value))}>{positions.map((job) => <option key={job.id} value={job.id}>{ui(RECRUITMENT_ROLES[job.position].vn)}</option>)}</NativeSelect></div>
+        <div className="space-y-2"><Label htmlFor="application-employment">{ui('Employment type')} *</Label><NativeSelect id="application-employment" name="employmentType" required value={employmentType} onChange={(event) => setPreferredType(event.target.value)}>{employmentTypes.map((type) => <option key={type} value={type}>{ui(type === 'PART_TIME' ? 'Part-time' : 'Full-time')}</option>)}</NativeSelect></div>
+        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
           <div className="space-y-2"><Label htmlFor="application-name">{ui("Họ và tên *") }</Label><Input id="application-name" name="fullName" autoComplete="name" required minLength={2} maxLength={100} placeholder="Nguyễn Văn An" /></div>
           <div className="space-y-2"><Label htmlFor="application-phone">{ui("Số điện thoại *") }</Label><Input id="application-phone" name="phone" type="tel" autoComplete="tel" required pattern="[+]?[0-9 \(\)\-]{9,20}" maxLength={20} onInput={(event) => { const digits = event.currentTarget.value.replace(/\D/g, '').length; event.currentTarget.setCustomValidity(digits >= 9 && digits <= 15 ? '' : ui("Vui lòng nhập số điện thoại gồm 9–15 chữ số.")); }} placeholder="0905 123 456" /></div>
         </div>
@@ -77,8 +79,8 @@ export function ApplicationForm({ positions, selectedId, onSelect }: {
         <div className="space-y-2"><Label htmlFor="application-experience">{ui("Kinh nghiệm / giới thiệu bản thân") }</Label><Textarea id="application-experience" name="experience" maxLength={2000} placeholder={ui("Chia sẻ kinh nghiệm hoặc điều bạn muốn Mix Food biết về mình")} /></div>
       </fieldset>
       <p className="text-xs leading-5 text-muted-foreground">{ui("Thông tin được gửi đến bộ phận quản lý tuyển dụng Mix Food để liên hệ về hồ sơ của bạn.") }</p>
-      {error && <p role="alert" className="rounded-lg border border-destructive/30 bg-destructive/10 p-3 text-sm text-destructive">{ui(error)}</p>}
-      <Button type="submit" disabled={pending} className="w-full sm:w-auto">{pending ? <Loader2 className="mr-2 size-4 animate-spin" /> : <Send className="mr-2 size-4" />}{pending ? ui("Đang gửi hồ sơ…") : ui("Gửi hồ sơ ứng tuyển")}</Button>
+      {error && <p role="alert" className="break-words rounded-lg border border-destructive/30 bg-destructive/10 p-3 text-sm text-destructive [overflow-wrap:anywhere]">{ui(error)}</p>}
+      <Button type="submit" disabled={pending} size="lg" className="w-full sm:w-auto">{pending ? <Loader2 aria-hidden="true" className="size-4 animate-spin" /> : <Send aria-hidden="true" className="size-4" />}{pending ? ui("Đang gửi hồ sơ…") : ui("Gửi hồ sơ ứng tuyển")}</Button>
     </form>
   </section>;
 }

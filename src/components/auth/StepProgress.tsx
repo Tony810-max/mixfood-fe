@@ -30,8 +30,8 @@ export const StepProgress = ({ currentStep, steps, className }: StepProgressProp
 
   const ui = useUiText();
   return (
-    <div className={cn("w-full mb-8", className)}>
-      <div
+    <div className={cn("mb-7 w-full", className)}>
+      <ol
         className="relative grid items-start"
         style={{ gridTemplateColumns: `repeat(${n}, minmax(0, 1fr))` }}
       >
@@ -39,15 +39,16 @@ export const StepProgress = ({ currentStep, steps, className }: StepProgressProp
             and last column, so it starts/ends exactly under those circles
             regardless of how wide each step's label text is. */}
         <div
-          className="absolute top-6 h-0.5 -translate-y-1/2"
+          aria-hidden="true"
+          className="absolute top-[22px] h-0.5 -translate-y-1/2"
           style={{ left: halfColumn, right: halfColumn }}
         >
-          <div className="absolute inset-0 bg-gray-200 dark:bg-gray-700 rounded-full" />
+          <div className="absolute inset-0 rounded-full bg-border" />
           <motion.div
-            className="absolute inset-y-0 left-0 bg-primary-gradient rounded-full"
+            className="absolute inset-y-0 left-0 rounded-full bg-primary"
             initial={{ width: '0%' }}
             animate={{ width: `${((currentStep - 1) / (n - 1)) * 100}%` }}
-            transition={{ duration: 0.5, ease: 'easeInOut' }}
+            transition={{ duration: 0.45, ease: [0.2, 0.8, 0.2, 1] }}
           />
         </div>
 
@@ -58,41 +59,45 @@ export const StepProgress = ({ currentStep, steps, className }: StepProgressProp
           const isPending = index + 1 > currentStep;
 
           return (
-            <div key={step.id} className="relative z-10 flex flex-col items-center">
+            <li
+              key={step.id}
+              aria-current={isCurrent ? 'step' : undefined}
+              className="relative z-10 flex flex-col items-center"
+            >
               <motion.div
-                initial={{ scale: 0.8, opacity: 0 }}
+                initial={{ scale: 0.9, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
-                transition={{ delay: index * 0.1 }}
+                transition={{ delay: index * 0.08, duration: 0.3, ease: [0.2, 0.8, 0.2, 1] }}
                 className={cn(
-                  "w-12 h-12 rounded-full flex items-center justify-center border-2 transition-all duration-300",
-                  isCompleted && "bg-primary-gradient border-primary text-primary-foreground shadow-lg",
-                  isCurrent && "bg-white dark:bg-slate-800 border-primary text-primary shadow-md scale-110",
-                  isPending && "bg-white dark:bg-slate-800 border-gray-300 dark:border-gray-600 text-gray-400"
+                  "flex h-11 w-11 items-center justify-center rounded-full border-2 transition-colors duration-300",
+                  isCompleted && "border-primary bg-primary text-primary-foreground",
+                  isCurrent && "border-primary bg-card text-primary ring-4 ring-primary/10",
+                  isPending && "border-border bg-card text-muted-foreground"
                 )}
               >
                 {isCompleted ? (
-                  <Check className="w-6 h-6" />
+                  <Check className="h-5 w-5" aria-hidden="true" />
                 ) : (
                   step.icon
                 )}
               </motion.div>
               <motion.span
-                initial={{ opacity: 0, y: 10 }}
+                initial={{ opacity: 0, y: 6 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.1 + 0.2 }}
+                transition={{ delay: index * 0.08 + 0.15, duration: 0.3 }}
                 className={cn(
-                  "mt-2 text-xs font-medium whitespace-nowrap",
-                  isCurrent && "text-primary",
-                  isCompleted && "text-primary",
-                  isPending && "text-gray-400"
+                  "mt-2 text-center text-xs font-medium",
+                  (isCurrent || isCompleted) && "text-primary",
+                  isPending && "text-muted-foreground"
                 )}
               >
                 {ui(step.label)}
+                {isCompleted && <span className="sr-only"> ✓</span>}
               </motion.span>
-            </div>
+            </li>
           );
         })}
-      </div>
+      </ol>
     </div>
   );
 };

@@ -1,57 +1,59 @@
-
-import { useUiText } from '@/contexts/LanguageContext';
 import interiorImg from "@/assets/restaurant-interior.jpg";
-import { useLanguage } from "@/contexts/LanguageContext";
-import { motion } from "framer-motion";
-import { ArrowUpRight } from "lucide-react";
-import { Link } from "react-router-dom";
-import { ROUTES } from "@/utils/const";
+import { useSiteCopy } from "@/components/brand/copy";
+import { Reveal, Stagger, StaggerItem } from "@/components/motion";
+import ReserveButton from "@/components/navigation/ReserveButton";
+import { useLanguage, useUiText } from "@/contexts/LanguageContext";
+import { SectionHeading } from "./SectionHeading";
 
+/** Basil brand section: the "Balance of Four" story with the four flavours as an editorial list. */
 const About = () => {
   const ui = useUiText();
-  const { lang, t } = useLanguage();
+  const { t } = useLanguage();
+  const copy = useSiteCopy();
+  const flavours = [t.aboutSalt, t.aboutSweet, t.aboutSpicy, t.aboutSour];
 
   return (
-    <section id="about" className="relative scroll-mt-20 overflow-hidden bg-[#30251f] py-16 text-[#fff8ee] md:py-24">
-      <div className="container mx-auto px-4 md:px-6">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-12 lg:gap-20 items-center">
-          <motion.div
-            initial={{ opacity: 0, x: -30 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true, margin: "-100px" }}
-            transition={{ duration: 0.7, ease: [0.2, 0.8, 0.2, 1] }}
-            className="order-first lg:order-none"
-          >
+    <section id="about" aria-labelledby="about-title" className="relative scroll-mt-20 overflow-hidden bg-primary py-16 text-primary-foreground md:py-24">
+      <div className="page-container">
+        <div className="grid grid-cols-1 items-center gap-10 md:gap-14 lg:grid-cols-[1fr_1.05fr] lg:gap-20">
+          <Reveal className="relative order-first">
+            <span
+              aria-hidden="true"
+              className="absolute inset-0 -translate-x-2.5 translate-y-2.5 rounded-2xl border border-brass/70"
+            />
             <img
               src={interiorImg}
               alt={ui("Mix Food restaurant interior")}
+              width={1200}
+              height={800}
               loading="lazy"
-              className="aspect-[4/3] w-full rounded-[2rem_5rem_2rem_2rem] object-cover shadow-layered"
+              decoding="async"
+              className="relative aspect-[4/3] w-full rounded-2xl object-cover shadow-layered-hover"
             />
-          </motion.div>
-          <motion.div
-            initial={{ opacity: 0, x: 30 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true, margin: "-100px" }}
-            transition={{ duration: 0.7, delay: 0.15, ease: [0.2, 0.8, 0.2, 1] }}
-            className="space-y-4 md:space-y-6"
-          >
-            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#eabda4]">{lang === "vn" ? "Câu chuyện của chúng tôi" : "Our story"}</p>
-            <h2 className="font-serif text-3xl font-semibold text-balance md:text-4xl lg:text-5xl">
-              {t.aboutTitle}
-            </h2>
-            <p className="max-w-[65ch] text-sm leading-7 text-[#e4d4c8] md:text-base">
-              {t.aboutText}
-            </p>
-            <div className="flex flex-wrap gap-3 pt-2 md:pt-4">
-              {[t.aboutSalt, t.aboutSweet, t.aboutSpicy, t.aboutSour].map((flavor) => (
-                <span key={flavor} className="rounded-full border border-[#eabda4]/30 px-4 py-2 text-xs font-medium text-[#f6d3bb]">
-                  {flavor}
-                </span>
+          </Reveal>
+
+          <div>
+            <SectionHeading
+              titleId="about-title"
+              tone="dark"
+              eyebrow={copy.storyEyebrow}
+              title={t.aboutTitle}
+              description={t.aboutText}
+            />
+
+            <Stagger as="ul" className="mt-8 grid grid-cols-2 gap-x-6 gap-y-5 sm:grid-cols-4" stagger={0.07}>
+              {flavours.map((flavour, index) => (
+                <StaggerItem as="li" key={flavour} className="border-t border-brass/70 pt-3">
+                  <span aria-hidden="true" className="block font-serif text-sm tabular-nums text-brass">{`0${index + 1}`}</span>
+                  <span className="mt-1 block font-serif text-xl font-semibold text-primary-foreground">{flavour}</span>
+                </StaggerItem>
               ))}
-            </div>
-            <Link to={ROUTES.BOOKING} className="inline-flex min-h-12 items-center gap-3 border-b border-[#eabda4]/50 text-sm font-semibold text-[#f6d3bb] transition-colors hover:text-white">{t.reserveTable}<ArrowUpRight className="h-4 w-4" /></Link>
-          </motion.div>
+            </Stagger>
+
+            <Reveal delay={0.1} className="mt-9">
+              <ReserveButton variant="onDark" size="lg" content={t.reserveTable} />
+            </Reveal>
+          </div>
         </div>
       </div>
     </section>

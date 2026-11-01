@@ -12,6 +12,7 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import { LanguageProvider } from "@/contexts/LanguageContext";
 import { TableSessionProvider } from "@/contexts/TableSessionContext";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { MotionConfig } from "framer-motion";
 import { lazy, Suspense, useEffect } from "react";
 import { BrowserRouter, Navigate, Route, Routes, useLocation } from "react-router-dom";
 import { ROUTES } from "./utils/const.ts";
@@ -48,8 +49,8 @@ const queryClient = new QueryClient({
 
 const RouteFallback = () => { const ui = useUiText(); return (
   <div className="flex min-h-[60vh] items-center justify-center" role="status" aria-live="polite">
-    <div className="flex items-center gap-3 rounded-full border bg-card px-5 py-3 text-sm text-muted-foreground shadow-layered">
-      <span className="h-4 w-4 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+    <div className="flex items-center gap-3 rounded-xl border border-border bg-card px-5 py-3 text-sm text-muted-foreground shadow-layered">
+      <span aria-hidden="true" className="h-4 w-4 animate-spin rounded-full border-2 border-primary border-t-transparent" />
       {ui("Đang tải nội dung…") } </div>
   </div>
 ); };
@@ -91,6 +92,7 @@ const App = () => (
         <AuthProvider>
           <LanguageProvider>
             <TooltipProvider>
+            <MotionConfig reducedMotion="user">
               <Sonner richColors position="top-center" />
               <BlockedUserToast />
               <BrowserRouter>
@@ -136,6 +138,7 @@ const App = () => (
                   </Routes>
                 </Suspense>
               </BrowserRouter>
+            </MotionConfig>
             </TooltipProvider>
           </LanguageProvider>
         </AuthProvider>

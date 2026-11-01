@@ -1,13 +1,12 @@
-import { AuthCard, AuthFormLayout, AuthHeader, AuthLogo, CountdownTimer, OTPInput, StepProgress } from "@/components/auth";
+import { AuthCard, AuthField, AuthFormLayout, AuthHeader, AuthLogo, CountdownTimer, OTPInput, StepProgress } from "@/components/auth";
 import Header from "@/components/layout/Header";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useLanguage, useUiText } from "@/contexts/LanguageContext";
 import { useForgotPassword } from "@/hooks/useForgotPassword";
 import { ROUTES } from "@/utils/const";
 import { AnimatePresence, motion } from "framer-motion";
-import { ArrowLeft, CheckCircle2, Eye, EyeOff, Key, Lock, Mail, ShieldCheck } from "lucide-react";
+import { ArrowLeft, CheckCircle2, Key, Loader2, Lock, Mail, ShieldCheck } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -76,63 +75,57 @@ const ForgotPasswordPage = () => {
     }
   };
 
+  const stepMotion = {
+    initial: { opacity: 0, x: 16 },
+    animate: { opacity: 1, x: 0 },
+    exit: { opacity: 0, x: -16 },
+    transition: { duration: 0.3, ease: [0.2, 0.8, 0.2, 1] as [number, number, number, number] },
+  };
+
   const renderEmailStep = () => (
-    <motion.div
-      key="email"
-      initial={{ opacity: 0, x: 20 }}
-      animate={{ opacity: 1, x: 0 }}
-      exit={{ opacity: 0, x: -20 }}
-      transition={{ duration: 0.3 }}
-      className="space-y-6"
-    >
-      <AuthLogo icon={<Mail className="w-full h-full text-primary p-4" />} />
+    <motion.div key="email" {...stepMotion} className="space-y-6">
+      <AuthLogo icon={<Mail className="h-full w-full p-4 text-primary" aria-hidden="true" />} />
       <AuthHeader
         title={t.forgotPasswordTitle}
         subtitle={t.forgotPasswordSubtitle}
       />
       <div className="space-y-4">
-        <div className="space-y-2">
-          <Label htmlFor="email" className="text-sm font-medium">
-            {t.loginEmailAddress}
-          </Label>
-          <div className="relative">
-            <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input
-              id="email"
-              type="email"
-              placeholder={t.loginEmailPlaceholderAddress}
-              className={`pl-10 h-11 ${error ? 'border-destructive focus:border-destructive focus:ring-destructive' : 'border-primary/30 focus:border-primary focus:ring-primary'}`}
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              disabled={isLoading}
-            />
-          </div>
-          {error && <p className="text-sm text-destructive">{ui(error)}</p>}
-        </div>
+        <AuthField
+          id="email"
+          type="email"
+          autoComplete="email"
+          label={t.loginEmailAddress}
+          icon={Mail}
+          placeholder={t.loginEmailPlaceholderAddress}
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          disabled={isLoading}
+          error={error ? ui(error) : undefined}
+        />
         <Button
-          className="w-full h-11 bg-primary-gradient font-semibold shadow-md hover:shadow-lg hover:brightness-95 transition-all"
+          className="w-full active:scale-[0.98]"
           size="lg"
           onClick={handleSendOTP}
           disabled={isLoading || !email}
         >
           {isLoading ? (
             <>
-              <Key className="mr-2 h-4 w-4 animate-spin" />
+              <Loader2 className="animate-spin" aria-hidden="true" />
               {t.forgotPasswordSending}
             </>
           ) : (
             <>
-              <Key className="mr-2 h-4 w-4" />
+              <Key aria-hidden="true" />
               {t.forgotPasswordButton}
             </>
           )}
         </Button>
         <Button
           variant="ghost"
-          className="w-full border border-border bg-secondary/70 text-secondary-foreground hover:bg-secondary hover:text-secondary-foreground"
+          className="w-full text-muted-foreground hover:text-foreground"
           onClick={() => navigate(ROUTES.AUTH.LOGIN)}
         >
-          <ArrowLeft className="mr-2 h-4 w-4" />
+          <ArrowLeft aria-hidden="true" />
           {t.forgotPasswordBackToLogin}
         </Button>
       </div>
@@ -140,33 +133,27 @@ const ForgotPasswordPage = () => {
   );
 
   const renderOTPStep = () => (
-    <motion.div
-      key="otp"
-      initial={{ opacity: 0, x: 20 }}
-      animate={{ opacity: 1, x: 0 }}
-      exit={{ opacity: 0, x: -20 }}
-      transition={{ duration: 0.3 }}
-      className="space-y-6"
-    >
-      <AuthLogo icon={<ShieldCheck className="w-full h-full text-primary p-4" />} />
+    <motion.div key="otp" {...stepMotion} className="space-y-6">
+      <AuthLogo icon={<ShieldCheck className="h-full w-full p-4 text-primary" aria-hidden="true" />} />
       <AuthHeader
         title={t.fpStepOtp}
         subtitle={`${t.fpOtpSubtitle} ${email}`}
       />
       <div className="space-y-4">
-        <div className="bg-primary/10 p-4 rounded-lg border border-primary/25">
+        <div className="rounded-xl border border-brass/40 bg-secondary/60 p-3.5">
           <p className="text-sm text-foreground">
             {t.fpOtpNote}
           </p>
         </div>
         <div className="space-y-2">
-          <Label className="text-sm font-medium">{t.fpOtpLabel}</Label>
+          <Label id="fp-otp-label" className="block text-center text-sm font-medium">{t.fpOtpLabel}</Label>
           <OTPInput
             length={6}
             value={otp}
             onChange={setOtp}
             disabled={isLoading}
             error={ui(error)}
+            labelledBy="fp-otp-label"
           />
         </div>
         <CountdownTimer
@@ -177,26 +164,27 @@ const ForgotPasswordPage = () => {
         <div className="flex gap-3">
           <Button
             variant="outline"
-            className="flex-1 border-primary/30 text-primary hover:bg-primary/10"
+            className="flex-1"
             onClick={handleBack}
             disabled={isLoading}
           >
-            <ArrowLeft className="mr-2 h-4 w-4" />
+            <ArrowLeft aria-hidden="true" />
             {t.registerBack}
           </Button>
           <Button
-            className="flex-1 h-11 bg-primary-gradient font-semibold shadow-md hover:shadow-lg hover:brightness-95 transition-all"
+            className="flex-1 active:scale-[0.98]"
+            size="lg"
             onClick={handleVerifyOTP}
             disabled={isLoading || otp.length !== 6}
           >
             {isLoading ? (
               <>
-                <Key className="mr-2 h-4 w-4 animate-spin" />
+                <Loader2 className="animate-spin" aria-hidden="true" />
                 {t.fpVerifying}
               </>
             ) : (
               <>
-                <CheckCircle2 className="mr-2 h-4 w-4" />
+                <CheckCircle2 aria-hidden="true" />
                 {t.fpVerifyButton}
               </>
             )}
@@ -207,93 +195,68 @@ const ForgotPasswordPage = () => {
   );
 
   const renderNewPasswordStep = () => (
-    <motion.div
-      key="newPassword"
-      initial={{ opacity: 0, x: 20 }}
-      animate={{ opacity: 1, x: 0 }}
-      exit={{ opacity: 0, x: -20 }}
-      transition={{ duration: 0.3 }}
-      className="space-y-6"
-    >
-      <AuthLogo icon={<Lock className="w-full h-full text-primary p-4" />} />
+    <motion.div key="newPassword" {...stepMotion} className="space-y-6">
+      <AuthLogo icon={<Lock className="h-full w-full p-4 text-primary" aria-hidden="true" />} />
       <AuthHeader
         title={t.fpNewPasswordTitle}
         subtitle={t.fpNewPasswordSubtitle}
       />
       <div className="space-y-4">
-        <div className="space-y-2">
-          <Label htmlFor="newPassword" className="text-sm font-medium">
-            {t.fpNewPasswordLabel}
-          </Label>
-          <div className="relative">
-            <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input
-              id="newPassword"
-              type={showPassword ? "text" : "password"}
-              placeholder="••••••••"
-              className={`pl-10 pr-10 h-11 ${errors.newPassword || error ? 'border-destructive focus:border-destructive focus:ring-destructive' : 'border-primary/30 focus:border-primary focus:ring-primary'}`}
-              value={newPassword}
-              onChange={(e) => setNewPassword(e.target.value)}
-              disabled={isLoading}
-            />
-            <button
-              type="button"
-              onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-            >
-              {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-            </button>
-          </div>
-          {errors.newPassword && <p className="text-sm text-destructive">{ui(errors.newPassword)}</p>}
-        </div>
-        <div className="space-y-2">
-          <Label htmlFor="confirmPassword" className="text-sm font-medium">
-            {t.fpConfirmNewPasswordLabel}
-          </Label>
-          <div className="relative">
-            <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input
-              id="confirmPassword"
-              type={showConfirmPassword ? "text" : "password"}
-              placeholder="••••••••"
-              className={`pl-10 pr-10 h-11 ${errors.confirmPassword || error ? 'border-destructive focus:border-destructive focus:ring-destructive' : 'border-primary/30 focus:border-primary focus:ring-primary'}`}
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              disabled={isLoading}
-            />
-            <button
-              type="button"
-              onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-            >
-              {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-            </button>
-          </div>
-          {errors.confirmPassword && <p className="text-sm text-destructive">{ui(errors.confirmPassword)}</p>}
-        </div>
+        <AuthField
+          id="newPassword"
+          type={showPassword ? "text" : "password"}
+          autoComplete="new-password"
+          label={t.fpNewPasswordLabel}
+          icon={Lock}
+          placeholder="••••••••"
+          value={newPassword}
+          onChange={(e) => setNewPassword(e.target.value)}
+          disabled={isLoading}
+          error={errors.newPassword ? ui(errors.newPassword) : undefined}
+          invalid={Boolean(error)}
+          passwordToggle={{ visible: showPassword, onToggle: () => setShowPassword(!showPassword) }}
+        />
+        <AuthField
+          id="confirmPassword"
+          type={showConfirmPassword ? "text" : "password"}
+          autoComplete="new-password"
+          label={t.fpConfirmNewPasswordLabel}
+          icon={Lock}
+          placeholder="••••••••"
+          value={confirmPassword}
+          onChange={(e) => setConfirmPassword(e.target.value)}
+          disabled={isLoading}
+          error={errors.confirmPassword ? ui(errors.confirmPassword) : undefined}
+          invalid={Boolean(error)}
+          passwordToggle={{ visible: showConfirmPassword, onToggle: () => setShowConfirmPassword(!showConfirmPassword) }}
+        />
+        {error && !errors.newPassword && !errors.confirmPassword && (
+          <p role="alert" className="text-sm font-medium text-destructive">{ui(error)}</p>
+        )}
         <div className="flex gap-3">
           <Button
             variant="outline"
-            className="flex-1 border-primary/30 text-primary hover:bg-primary/10"
+            className="flex-1"
             onClick={handleBack}
             disabled={isLoading}
           >
-            <ArrowLeft className="mr-2 h-4 w-4" />
+            <ArrowLeft aria-hidden="true" />
             {t.registerBack}
           </Button>
           <Button
-            className="flex-1 h-11 bg-primary-gradient font-semibold shadow-md hover:shadow-lg hover:brightness-95 transition-all"
+            className="flex-1 active:scale-[0.98]"
+            size="lg"
             onClick={handleResetPassword}
             disabled={isLoading || !newPassword || !confirmPassword}
           >
             {isLoading ? (
               <>
-                <Key className="mr-2 h-4 w-4 animate-spin" />
+                <Loader2 className="animate-spin" aria-hidden="true" />
                 {t.fpResetting}
               </>
             ) : (
               <>
-                <CheckCircle2 className="mr-2 h-4 w-4" />
+                <CheckCircle2 aria-hidden="true" />
                 {t.fpResetButton}
               </>
             )}
@@ -306,35 +269,30 @@ const ForgotPasswordPage = () => {
   const renderSuccessStep = () => (
     <motion.div
       key="success"
-      initial={{ opacity: 0, scale: 0.9 }}
+      initial={{ opacity: 0, scale: 0.96 }}
       animate={{ opacity: 1, scale: 1 }}
-      transition={{ duration: 0.5 }}
+      transition={{ duration: 0.4, ease: [0.2, 0.8, 0.2, 1] }}
       className="space-y-6 text-center"
     >
-      <motion.div
-        initial={{ scale: 0 }}
-        animate={{ scale: 1 }}
-        transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
-        className="w-20 h-20 mx-auto bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center"
-      >
-        <CheckCircle2 className="w-10 h-10 text-green-600 dark:text-green-400" />
-      </motion.div>
+      <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-success/10 ring-1 ring-success/30">
+        <CheckCircle2 className="h-10 w-10 text-success" aria-hidden="true" />
+      </div>
       <AuthHeader
         title={t.fpSuccessTitle}
         subtitle={t.fpSuccessSubtitle}
       />
       <div className="space-y-4">
-        <div className="bg-green-50 dark:bg-green-900/20 p-4 rounded-lg border border-green-200 dark:border-green-800">
-          <p className="text-sm text-green-800 dark:text-green-200">
+        <div role="status" className="rounded-xl border border-success/30 bg-success/10 p-4">
+          <p className="text-sm font-medium text-foreground">
             {t.fpSuccessMessage}
           </p>
         </div>
         <Button
-          className="w-full h-11 bg-primary-gradient font-semibold shadow-md hover:shadow-lg hover:brightness-95 transition-all"
+          className="w-full active:scale-[0.98]"
           size="lg"
           onClick={() => navigate(ROUTES.AUTH.LOGIN)}
         >
-          <ArrowLeft className="mr-2 h-4 w-4" />
+          <ArrowLeft aria-hidden="true" />
           {t.fpLoginNow}
         </Button>
       </div>
@@ -345,9 +303,9 @@ const ForgotPasswordPage = () => {
     <AuthCard>
       <Header />
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
+        initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
+        transition={{ duration: 0.5, ease: [0.2, 0.8, 0.2, 1] }}
       >
         <AuthFormLayout>
           {step !== 'success' && (

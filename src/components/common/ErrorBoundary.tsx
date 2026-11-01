@@ -1,4 +1,6 @@
-import React, { Component, ErrorInfo, ReactNode } from 'react';
+import { Component, ErrorInfo, ReactNode } from 'react';
+import { RefreshCw, TriangleAlert } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import { translateUi } from '@/lib/localization';
 
 interface Props {
@@ -26,23 +28,36 @@ class ErrorBoundary extends Component<Props, State> {
 
   render() {
     if (this.state.hasError) {
+      // This boundary sits above the router and providers, so it uses plain
+      // anchors and translateUi (cookie based) instead of router/context hooks.
       return (
-        <div className="min-h-screen flex items-center justify-center bg-red-50 dark:bg-red-900/20">
-          <div className="text-center p-8">
-            <h1 className="text-2xl font-bold text-red-600 dark:text-red-400 mb-4">
+        <main className="flex min-h-screen items-center justify-center bg-background px-4 py-12">
+          <div
+            role="alert"
+            className="relative w-full max-w-md rounded-2xl border border-border/80 bg-card p-8 text-center shadow-layered sm:p-10"
+          >
+            <span aria-hidden="true" className="pointer-events-none absolute inset-x-8 top-0 h-px bg-brass/70" />
+            <p className="font-serif text-sm font-semibold tracking-wide text-brass-strong">Mix Food</p>
+            <div className="mx-auto mt-5 grid h-16 w-16 place-items-center rounded-full bg-destructive/10 text-destructive ring-1 ring-destructive/30">
+              <TriangleAlert className="h-8 w-8" aria-hidden="true" />
+            </div>
+            <h1 className="mt-5 font-serif text-2xl font-semibold text-foreground">
               {translateUi('Something went wrong')}
             </h1>
-            <p className="text-red-700 dark:text-red-300 mb-4">
+            <p className="mt-2 leading-relaxed text-muted-foreground">
               {translateUi('An unexpected error occurred')}
             </p>
-            <button
-              onClick={() => window.location.reload()}
-              className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
-            >
-              {translateUi('Reload Page')}
-            </button>
+            <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:justify-center">
+              <Button size="lg" className="active:scale-[0.98]" onClick={() => window.location.reload()}>
+                <RefreshCw aria-hidden="true" />
+                {translateUi('Reload Page')}
+              </Button>
+              <Button asChild size="lg" variant="outline" className="active:scale-[0.98]">
+                <a href="/">{translateUi('Home')}</a>
+              </Button>
+            </div>
           </div>
-        </div>
+        </main>
       );
     }
 

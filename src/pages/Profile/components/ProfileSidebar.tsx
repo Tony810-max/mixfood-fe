@@ -1,10 +1,12 @@
-import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
-import { Clock, Lock, LogOut, Shield, User } from 'lucide-react';
+import { Clock, Lock, LogOut, Shield, User, type LucideIcon } from 'lucide-react';
+
+type Section = 'info' | 'password' | 'reservations';
 
 interface ProfileSidebarProps {
-  activeSection: 'info' | 'password' | 'reservations';
-  onSectionChange: (section: 'info' | 'password' | 'reservations') => void;
+  activeSection: Section;
+  onSectionChange: (section: Section) => void;
   onLogout: () => void;
   labels: {
     accountSettings: string;
@@ -15,69 +17,67 @@ interface ProfileSidebarProps {
   };
 }
 
+const itemClass =
+  'inline-flex min-h-11 shrink-0 items-center gap-2.5 whitespace-nowrap rounded-xl px-3.5 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ring-offset-card lg:w-full lg:justify-start';
+
+/**
+ * Account navigation. Below `lg` it is a horizontally scrollable segmented
+ * control; from `lg` it becomes a vertical list in a sticky card.
+ */
 export const ProfileSidebar = ({
   activeSection,
   onSectionChange,
   onLogout,
   labels,
 }: ProfileSidebarProps) => {
+  const items: { id: Section; label: string; icon: LucideIcon }[] = [
+    { id: 'info', label: labels.profileUpdateInfo, icon: User },
+    { id: 'password', label: labels.profileChangePassword, icon: Lock },
+    { id: 'reservations', label: labels.reservationsTitle, icon: Clock },
+  ];
+
   return (
     <motion.div
-      initial={{ opacity: 0, x: -20 }}
-      animate={{ opacity: 1, x: 0 }}
-      transition={{ duration: 0.5, delay: 0.3 }}
-      className="w-full lg:w-64 shrink-0"
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4, ease: [0.2, 0.8, 0.2, 1] }}
+      className="w-full shrink-0 lg:w-64"
     >
-      <div className="rounded-2xl border border-primary/25 bg-card/95 p-5 shadow-layered backdrop-blur-sm lg:sticky lg:top-24">
-        <h3 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
-          <Shield className="h-5 w-5 text-primary" />
+      <div className="rounded-2xl border border-border/80 bg-card p-1.5 shadow-layered lg:sticky lg:top-28 lg:p-4">
+        <h2 className="mb-3 hidden items-center gap-2 px-1 font-serif text-lg font-semibold text-foreground lg:flex">
+          <Shield className="h-5 w-5 text-brass-strong" aria-hidden="true" />
           {labels.accountSettings}
-        </h3>        <nav className="space-y-2">
-          <Button
-            variant={activeSection === "info" ? "default" : "ghost"}
-            className={`w-full justify-start h-12 transition-all duration-300 ${
-              activeSection === "info"
-                ? "bg-primary-gradient text-primary-foreground shadow-lg shadow-primary/25"
-                : "text-foreground hover:bg-primary/10"
-            }`}
-            onClick={() => onSectionChange("info")}
-          >
-            <User className="mr-3 h-5 w-5" />
-            <span className="font-medium">{labels.profileUpdateInfo}</span>
-          </Button>
-          <Button
-            variant={activeSection === "password" ? "default" : "ghost"}
-            className={`w-full justify-start h-12 transition-all duration-300 ${
-              activeSection === "password"
-                ? "bg-primary-gradient text-primary-foreground shadow-lg shadow-primary/25"
-                : "text-foreground hover:bg-primary/10"
-            }`}
-            onClick={() => onSectionChange("password")}
-          >
-            <Lock className="mr-3 h-5 w-5" />
-            <span className="font-medium">{labels.profileChangePassword}</span>
-          </Button>
-          <Button
-            variant={activeSection === "reservations" ? "default" : "ghost"}
-            className={`w-full justify-start h-12 transition-all duration-300 ${
-              activeSection === "reservations"
-                ? "bg-primary-gradient text-primary-foreground shadow-lg shadow-primary/25"
-                : "text-foreground hover:bg-primary/10"
-            }`}
-            onClick={() => onSectionChange("reservations")}
-          >
-            <Clock className="mr-3 h-5 w-5" />
-            <span className="font-medium">{labels.reservationsTitle}</span>
-          </Button>
-          <div className="my-4 border-t border-primary/20" />
-          <Button
-            variant="ghost"
-            className="w-full justify-start h-12 hover:bg-red-100 dark:hover:bg-red-900/30 text-red-600 hover:text-red-700 dark:text-red-400 transition-all duration-300"
+        </h2>
+        <nav aria-label={labels.accountSettings} className="no-scrollbar flex gap-1 overflow-x-auto p-1 lg:flex-col lg:gap-1.5 lg:overflow-visible lg:p-0">
+          {items.map(({ id, label, icon: Icon }) => {
+            const active = activeSection === id;
+            return (
+              <button
+                key={id}
+                type="button"
+                aria-current={active ? 'page' : undefined}
+                onClick={() => onSectionChange(id)}
+                className={cn(
+                  itemClass,
+                  active
+                    ? 'bg-primary text-primary-foreground shadow-sm'
+                    : 'text-foreground hover:bg-accent',
+                )}
+              >
+                <Icon className="h-4 w-4 shrink-0" aria-hidden="true" />
+                <span>{label}</span>
+              </button>
+            );
+          })}
+          <span aria-hidden="true" className="mx-1 my-2 hidden h-px bg-border lg:block" />
+          <button
+            type="button"
             onClick={onLogout}
+            className={cn(itemClass, 'text-destructive hover:bg-destructive/10')}
           >
-            <LogOut className="mr-3 h-5 w-5" />
-            <span className="font-medium">{labels.headerLogout}</span>
-          </Button>
+            <LogOut className="h-4 w-4 shrink-0" aria-hidden="true" />
+            <span>{labels.headerLogout}</span>
+          </button>
         </nav>
       </div>
     </motion.div>

@@ -1,4 +1,6 @@
+import { useSiteCopy } from "@/components/brand/copy";
 import LanguageToggle from "@/components/navigation/LanguageToggle";
+import { NavLink } from "@/components/navigation/NavLink";
 import ReserveButton from "@/components/navigation/ReserveButton";
 import { Button } from "@/components/ui/button";
 import {
@@ -22,49 +24,58 @@ interface DesktopNavProps {
 
 const DesktopNav = ({ navItems }: DesktopNavProps) => {
   const { t } = useLanguage();
+  const copy = useSiteCopy();
   const { user, isAuthenticated, setUser } = useAuth();
   const logoutMutation = useLogout();
 
   return (
-    <nav className="hidden md:flex items-center gap-8">
-      {navItems.map((item) => (
-        <Link
-          key={item.href}
-          to={item.href}
-          className="font-body text-sm font-medium text-foreground/80 hover:text-primary transition-colors"
-        >
-          {item.label}
-        </Link>
-      ))}
+    <nav aria-label={copy.mainNavigation} className="hidden items-center gap-6 lg:flex xl:gap-8">
+      <ul className="flex items-center gap-6 xl:gap-8">
+        {navItems.map((item) => (
+          <li key={item.href}>
+            <NavLink
+              to={item.href}
+              end={item.href === ROUTES.HOME}
+              className="nav-underline inline-flex min-h-11 items-center rounded-sm font-body text-sm font-medium text-foreground/75 transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background aria-[current=page]:text-foreground"
+            >
+              {item.label}
+            </NavLink>
+          </li>
+        ))}
+      </ul>
+
+      <span aria-hidden="true" className="h-6 w-px bg-border" />
 
       <LanguageToggle variant="desktop" />
-      <ReserveButton content={t.reserveTable} />
-      
+
       {/* Auth Section */}
       {isAuthenticated ? (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="primary-action-on-hover flex h-10 items-center gap-2 rounded-xl border border-transparent px-4 text-sm font-semibold text-foreground/80 transition-all hover:-translate-y-0.5 hover:border-primary/20 hover:text-primary-foreground hover:shadow-md data-[state=open]:border-primary/20 data-[state=open]:text-primary-foreground">
-              <User className="w-4 h-4" />
-              <span>{user?.name || t.headerUser}</span>
-              <ChevronDown className="w-4 h-4" />
+            <Button
+              variant="outline"
+              className="max-w-[12rem] gap-2 rounded-xl px-3.5 text-foreground data-[state=open]:border-brass data-[state=open]:bg-accent/60"
+            >
+              <User className="h-4 w-4 shrink-0" />
+              <span className="truncate">{user?.name || t.headerUser}</span>
+              <ChevronDown className="h-4 w-4 shrink-0 text-muted-foreground" />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-60 rounded-2xl border-border/80 bg-popover p-1.5 shadow-lg">
-            <DropdownMenuLabel className="rounded-xl bg-muted/60 px-3 py-2.5 font-normal">
+          <DropdownMenuContent align="end" className="w-64 rounded-2xl border-border bg-popover p-1.5 shadow-layered-hover">
+            <DropdownMenuLabel className="rounded-xl bg-secondary/60 px-3 py-2.5 font-normal">
               <div className="flex flex-col space-y-1">
-                <p className="text-sm font-medium leading-none">{user?.name || t.headerUser}</p>
-                <p className="text-xs leading-none text-muted-foreground">{user?.email}</p>
+                <p className="truncate text-sm font-semibold leading-none">{user?.name || t.headerUser}</p>
+                <p className="truncate text-xs leading-none text-muted-foreground">{user?.email}</p>
               </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem asChild className="primary-action-on-highlight rounded-xl transition-colors focus:text-primary-foreground">
+            <DropdownMenuItem asChild className="min-h-11 rounded-xl focus:bg-accent focus:text-accent-foreground">
               <Link to={ROUTES.PROFILE} className="cursor-pointer">
                 <User className="mr-2 h-4 w-4" />
                 <span>{t.profileTitle}</span>
               </Link>
             </DropdownMenuItem>
-            <DropdownMenuItem asChild className="primary-action-on-highlight rounded-xl transition-colors focus:text-primary-foreground">
+            <DropdownMenuItem asChild className="min-h-11 rounded-xl focus:bg-accent focus:text-accent-foreground">
               <Link to={ROUTES.RESERVATIONS} className="cursor-pointer">
                 <Calendar className="mr-2 h-4 w-4" />
                 <span>{t.reservationsTitle}</span>
@@ -76,26 +87,24 @@ const DesktopNav = ({ navItems }: DesktopNavProps) => {
               e.stopPropagation();
               setUser(null);
               logoutMutation.mutate();
-            }} className="primary-action-on-highlight cursor-pointer rounded-xl text-destructive transition-colors hover:text-primary-foreground focus:text-primary-foreground">
+            }} className="min-h-11 cursor-pointer rounded-xl text-destructive focus:bg-destructive/10 focus:text-destructive">
               <LogOut className="mr-2 h-4 w-4" />
               <span>{t.headerLogout}</span>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       ) : (
-        <div className="flex items-center gap-3">
-          <Link to={ROUTES.AUTH.LOGIN}>
-            <Button variant="outline" size="sm" className="h-9 px-4 border-orange-300 dark:border-orange-700 text-orange-600 dark:text-orange-400 hover:bg-orange-50 dark:hover:bg-orange-950/50 hover:border-orange-400 font-medium transition-all">
-              {t.headerSignIn}
-            </Button>
-          </Link>
-          <Link to={ROUTES.AUTH.REGISTER}>
-            <Button size="sm" className="h-9 px-4 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-medium shadow-sm hover:shadow-md transition-all">
-              {t.headerSignUp}
-            </Button>
-          </Link>
+        <div className="flex items-center gap-1.5">
+          <Button asChild variant="ghost" size="sm">
+            <Link to={ROUTES.AUTH.LOGIN}>{t.headerSignIn}</Link>
+          </Button>
+          <Button asChild variant="outline" size="sm">
+            <Link to={ROUTES.AUTH.REGISTER}>{t.headerSignUp}</Link>
+          </Button>
         </div>
       )}
+
+      <ReserveButton content={t.reserveTable} className="min-w-0 px-5" />
     </nav>
   );
 };

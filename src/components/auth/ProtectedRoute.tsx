@@ -1,4 +1,5 @@
 import { useAuth } from "@/contexts/AuthContext";
+import { translateUi } from "@/lib/localization";
 import { ROUTES } from "@/utils/const";
 import { Navigate } from "react-router-dom";
 
@@ -15,8 +16,9 @@ export const ProtectedRoute = ({ children, requireAuth = true }: ProtectedRouteP
   if (isLoading) {
     console.log('[ProtectedRoute] Showing loading state');
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-600"></div>
+      <div className="flex min-h-screen items-center justify-center bg-background" role="status" aria-live="polite">
+        <div className="h-12 w-12 animate-spin rounded-full border-2 border-border border-t-primary" aria-hidden="true"></div>
+        <span className="sr-only">{translateUi('Loading content…')}</span>
       </div>
     );
   }

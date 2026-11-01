@@ -1,79 +1,54 @@
+import { useSiteCopy } from "@/components/brand/copy";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 
 interface LanguageToggleProps {
   variant?: "desktop" | "mobile";
 }
 
+const OPTIONS = [
+  { code: "en", label: "EN" },
+  { code: "vn", label: "VI" },
+] as const;
+
+/** EN / VI segmented control. The sliding thumb is the only animated part (transform only). */
 const LanguageToggle = ({ variant = "desktop" }: LanguageToggleProps) => {
   const { lang, setLang } = useLanguage();
+  const copy = useSiteCopy();
+  const mobile = variant === "mobile";
 
-  if (variant === "desktop") {
-    return (
-      <div className="flex items-center rounded-full bg-secondary p-1 gap-0.5 relative overflow-hidden">
-        <motion.div
-          className="absolute top-1 bottom-1 w-[calc(50%-2px)] bg-card rounded-full shadow-layered"
-          initial={false}
-          animate={{
-            x: lang === "en" ? 2 : "calc(100% - 4px)"
-          }}
-          transition={{ type: "spring", stiffness: 500, damping: 30 }}
-        />
-        <motion.button
-          onClick={() => setLang("en")}
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          className={`relative z-10 rounded-full px-3 py-1 text-xs font-semibold transition-colors ${
-            lang === "en" ? "text-primary" : "text-muted-foreground"
-          }`}
-        >
-          EN
-        </motion.button>
-        <motion.button
-          onClick={() => setLang("vn")}
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          className={`relative z-10 rounded-full px-3 py-1 text-xs font-semibold transition-colors ${
-            lang === "vn" ? "text-primary" : "text-muted-foreground"
-          }`}
-        >
-          VI
-        </motion.button>
-      </div>
-    );
-  }
-
-  // Mobile variant with smooth animations
   return (
-    <div className="flex items-center rounded-full bg-secondary p-1.5 gap-1 relative overflow-hidden">
-      <motion.div
-        className="absolute top-1.5 bottom-1.5 w-[calc(50%-4px)] bg-card rounded-full shadow-layered"
+    <div
+      role="group"
+      aria-label={copy.language}
+      className={cn(
+        "relative inline-flex items-center rounded-xl border border-border bg-secondary",
+        mobile ? "p-1" : "p-0.5",
+      )}
+    >
+      <motion.span
+        aria-hidden="true"
+        className={cn("absolute rounded-lg bg-card shadow-layered", mobile ? "inset-y-1 left-1 w-[calc(50%-0.25rem)]" : "inset-y-0.5 left-0.5 w-[calc(50%-0.125rem)]")}
         initial={false}
-        animate={{
-          x: lang === "en" ? 3 : "calc(100% - 6px)"
-        }}
-        transition={{ type: "spring", stiffness: 400, damping: 25 }}
+        animate={{ x: lang === "en" ? "0%" : "100%" }}
+        transition={{ type: "spring", stiffness: 500, damping: 36 }}
       />
-      <motion.button
-        onClick={() => setLang("en")}
-        whileHover={{ scale: 1.08 }}
-        whileTap={{ scale: 0.92 }}
-        className={`relative z-10 rounded-full px-5 py-2.5 text-sm font-semibold transition-colors ${
-          lang === "en" ? "text-primary" : "text-muted-foreground"
-        }`}
-      >
-        EN
-      </motion.button>
-      <motion.button
-        onClick={() => setLang("vn")}
-        whileHover={{ scale: 1.08 }}
-        whileTap={{ scale: 0.92 }}
-        className={`relative z-10 rounded-full px-5 py-2.5 text-sm font-semibold transition-colors ${
-          lang === "vn" ? "text-primary" : "text-muted-foreground"
-        }`}
-      >
-        VI
-      </motion.button>
+      {OPTIONS.map((option) => (
+        <button
+          key={option.code}
+          type="button"
+          aria-pressed={lang === option.code}
+          onClick={() => setLang(option.code)}
+          className={cn(
+            "relative z-10 grid place-items-center rounded-lg font-semibold tracking-wide transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+            mobile ? "min-h-11 min-w-16 px-5 text-sm" : "min-h-10 min-w-11 px-3 text-xs",
+            lang === option.code ? "text-primary" : "text-muted-foreground hover:text-foreground",
+          )}
+        >
+          {option.label}
+        </button>
+      ))}
     </div>
   );
 };

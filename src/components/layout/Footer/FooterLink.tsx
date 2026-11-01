@@ -5,7 +5,7 @@ export function FooterLink({ to, children }: { to: string; children: ReactNode }
   return (
     <Link
       to={to}
-      className="inline-block py-1 text-xs text-gray-300 transition-colors hover:text-red-500 md:text-sm"
+      className="inline-flex min-h-11 items-center rounded-sm text-sm text-primary-foreground/80 transition-colors hover:text-primary-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brass"
     >
       {children}
     </Link>

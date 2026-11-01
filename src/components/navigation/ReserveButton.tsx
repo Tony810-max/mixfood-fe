@@ -16,7 +16,7 @@ export default function ReserveButton({
   return (
     <Button
         asChild
-        className={cn("min-w-32 primary-action hover:-translate-y-0.5 hover:opacity-95", className)}
+        className={cn("min-w-32", className)}
         {...props}
       >
         <Link to={ROUTES.BOOKING}>{content}</Link>

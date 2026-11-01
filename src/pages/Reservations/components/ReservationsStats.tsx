@@ -1,5 +1,8 @@
+import { RESERVATION_STATUS } from '@/constants';
+import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
-import { Calendar, AlertCircle, CheckCircle, XCircle } from 'lucide-react';
+import { CalendarDays } from 'lucide-react';
+import { getReservationStatusStyle } from './reservationStatusStyle';
 
 interface ReservationsStatsProps {
   stats: {
@@ -18,69 +21,59 @@ interface ReservationsStatsProps {
   };
 }
 
-const StatCard = ({ 
-  icon: Icon, 
-  label, 
-  value, 
-  color, 
-  bgColor 
+const StatCard = ({
+  icon: Icon,
+  label,
+  value,
+  tone,
+  index,
+  className,
 }: {
   icon: React.ComponentType<{ className?: string }>;
   label: string;
   value: number;
-  color: string;
-  bgColor: string;
+  tone: string;
+  index: number;
+  className?: string;
 }) => (
   <motion.div
-    initial={{ opacity: 0, y: 20 }}
+    initial={{ opacity: 0, y: 10 }}
     animate={{ opacity: 1, y: 0 }}
-    transition={{ duration: 0.3 }}
-    className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-2xl shadow-xl border border-orange-200 dark:border-orange-900/50 p-6"
+    transition={{ duration: 0.3, delay: index * 0.04, ease: [0.2, 0.8, 0.2, 1] }}
+    className={cn('rounded-2xl border border-border/80 bg-card p-4 shadow-layered', className)}
   >
-    <div className="flex items-center gap-4">
-      <div className={`p-3 rounded-xl ${bgColor}`}>
-        <Icon className={`h-6 w-6 ${color}`} />
+    <div className="flex items-center gap-3">
+      <div className={cn('grid h-10 w-10 shrink-0 place-items-center rounded-xl', tone)}>
+        <Icon className="h-5 w-5" />
       </div>
-      <div>
-        <p className="text-sm text-muted-foreground">{label}</p>
-        <p className="text-2xl font-bold text-foreground">{value}</p>
+      <div className="min-w-0">
+        <p className="truncate text-xs text-muted-foreground sm:text-sm">{label}</p>
+        <p className="font-serif text-2xl font-semibold leading-tight tabular-nums text-foreground">{value}</p>
       </div>
     </div>
   </motion.div>
 );
 
 export const ReservationsStats = ({ stats, labels }: ReservationsStatsProps) => {
+  const pending = getReservationStatusStyle(RESERVATION_STATUS.PENDING);
+  const confirmed = getReservationStatusStyle(RESERVATION_STATUS.CONFIRMED);
+  const arrived = getReservationStatusStyle(RESERVATION_STATUS.ARRIVED);
+  const cancelled = getReservationStatusStyle(RESERVATION_STATUS.CANCELLED);
+
   return (
-    <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
+    <div className="mb-6 grid grid-cols-2 gap-3 md:grid-cols-5">
       <StatCard
-        icon={Calendar}
+        index={0}
+        icon={CalendarDays}
         label={labels.total}
         value={stats.total}
-        color="text-orange-600 dark:text-orange-400"
-        bgColor="bg-orange-100 dark:bg-orange-900/30"
+        tone="bg-secondary text-primary"
+        className="col-span-2 md:col-span-1"
       />
-      <StatCard
-        icon={AlertCircle}
-        label={labels.pending}
-        value={stats.pending}
-        color="text-yellow-600 dark:text-yellow-400"
-        bgColor="bg-yellow-100 dark:bg-yellow-900/30"
-      />
-      <StatCard
-        icon={CheckCircle}
-        label={labels.confirmed}
-        value={stats.confirmed}
-        color="text-green-600 dark:text-green-400"
-        bgColor="bg-green-100 dark:bg-green-900/30"
-      />
-      <StatCard icon={CheckCircle} label={labels.arrived} value={stats.arrived} color="text-blue-600 dark:text-blue-400" bgColor="bg-blue-100 dark:bg-blue-900/30" />
-      <StatCard
-        icon={XCircle}
-        label={labels.cancelled}
-        value={stats.cancelled}
-        color="text-red-600 dark:text-red-400"
-        bgColor="bg-red-100 dark:bg-red-900/30"
-      />
+      <StatCard index={1} icon={pending.icon} label={labels.pending} value={stats.pending} tone={pending.tone} />
+      <StatCard index={2} icon={confirmed.icon} label={labels.confirmed} value={stats.confirmed} tone={confirmed.tone} />
+      <StatCard index={3} icon={arrived.icon} label={labels.arrived} value={stats.arrived} tone={arrived.tone} />
+      <StatCard index={4} icon={cancelled.icon} label={labels.cancelled} value={stats.cancelled} tone={cancelled.tone} />
     </div>
   );
 };

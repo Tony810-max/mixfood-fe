@@ -1,11 +1,10 @@
 
 import { useUiText } from '@/contexts/LanguageContext';
-import { AuthCard, AuthFormLayout, AuthHeader, AuthLogo } from "@/components/auth";
+import { AuthCard, AuthField, AuthFormLayout, AuthHeader, AuthLogo } from "@/components/auth";
 import { OTPInput } from "@/components/auth/OTPInput";
 import { StepProgress } from "@/components/auth/StepProgress";
 import Header from "@/components/layout/Header";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useRegister, useSendRegistrationCode } from "@/hooks/api/useAuth";
@@ -18,7 +17,7 @@ import { ROUTES } from "@/utils/const";
 import { formatPhoneNumber } from "@/utils/formatters";
 import { showErrorToast } from "@/utils/toastHelpers";
 import { motion } from "framer-motion";
-import { Eye, EyeOff, Info, Lock, Mail, Phone, Shield, User } from "lucide-react";
+import { Info, Loader2, Lock, Mail, Phone, Shield, User } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
@@ -139,131 +138,89 @@ const RegisterPage = () => {
     <AuthCard>
       <Header />
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
+        initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
+        transition={{ duration: 0.5, ease: [0.2, 0.8, 0.2, 1] }}
       >
         <AuthFormLayout>
           <AuthLogo />
           <AuthHeader title={t.registerTitle} subtitle={t.registerSubtitle} />
-          <StepProgress currentStep={step} steps={steps} className="max-w-sm mx-auto" />
+          <StepProgress currentStep={step} steps={steps} className="mx-auto max-w-sm" />
 
           {step === 1 && (
             <motion.div
               key="step1"
-              initial={{ opacity: 0, x: -20 }}
+              initial={{ opacity: 0, x: -16 }}
               animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.3 }}
+              transition={{ duration: 0.3, ease: [0.2, 0.8, 0.2, 1] }}
               className="space-y-4"
             >
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="fullName" className="text-sm font-medium">
-                    {t.registerFullName}
-                  </Label>
-                  <div className="relative">
-                    <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                    <Input
-                      id="fullName"
-                      type="text"
-                      placeholder={t.registerFullNamePlaceholder}
-                      className={`pl-10 h-11 ${errors.fullName ? "border-red-500 focus:border-red-500 focus:ring-red-500" : "border-orange-200 dark:border-orange-900 focus:border-orange-400 focus:ring-orange-400"}`}
-                      value={formData.fullName}
-                      onChange={(e) => handleInputChange("fullName", e.target.value)}
-                    />
-                  </div>
-                  {errors.fullName && <p className="text-sm text-red-500">{errors.fullName}</p>}
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="phone" className="text-sm font-medium">
-                    {t.registerPhoneNumber}
-                  </Label>
-                  <div className="relative">
-                    <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                    <Input
-                      id="phone"
-                      type="tel"
-                      placeholder={t.registerPhonePlaceholder}
-                      className={`pl-10 h-11 ${errors.phone ? "border-red-500 focus:border-red-500 focus:ring-red-500" : "border-orange-200 dark:border-orange-900 focus:border-orange-400 focus:ring-orange-400"}`}
-                      value={formData.phone}
-                      onChange={(e) => handleInputChange("phone", e.target.value)}
-                    />
-                  </div>
-                  {errors.phone && <p className="text-sm text-red-500">{errors.phone}</p>}
-                </div>
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                <AuthField
+                  id="fullName"
+                  type="text"
+                  autoComplete="name"
+                  label={t.registerFullName}
+                  icon={User}
+                  placeholder={t.registerFullNamePlaceholder}
+                  value={formData.fullName}
+                  onChange={(e) => handleInputChange("fullName", e.target.value)}
+                  error={errors.fullName}
+                />
+                <AuthField
+                  id="phone"
+                  type="tel"
+                  autoComplete="tel"
+                  label={t.registerPhoneNumber}
+                  icon={Phone}
+                  placeholder={t.registerPhonePlaceholder}
+                  value={formData.phone}
+                  onChange={(e) => handleInputChange("phone", e.target.value)}
+                  error={errors.phone}
+                />
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="email" className="text-sm font-medium">
-                  {t.registerEmail}
-                </Label>
-                <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                  <Input
-                    id="email"
-                    type="email"
-                    placeholder={t.registerEmailPlaceholder}
-                    className={`pl-10 h-11 ${errors.email ? "border-red-500 focus:border-red-500 focus:ring-red-500" : "border-orange-200 dark:border-orange-900 focus:border-orange-400 focus:ring-orange-400"}`}
-                    value={formData.email}
-                    onChange={(e) => handleInputChange("email", e.target.value)}
-                  />
-                </div>
-                {errors.email && <p className="text-sm text-red-500">{errors.email}</p>}
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="password" className="text-sm font-medium">
-                  {t.registerPassword}
-                </Label>
-                <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                  <Input
-                    id="password"
-                    type={showPassword ? "text" : "password"}
-                    placeholder={t.registerPasswordPlaceholder}
-                    className={`pl-10 pr-10 h-11 ${errors.password ? "border-red-500 focus:border-red-500 focus:ring-red-500" : "border-orange-200 dark:border-orange-900 focus:border-orange-400 focus:ring-orange-400"}`}
-                    value={formData.password}
-                    onChange={(e) => handleInputChange("password", e.target.value)}
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword((visible) => !visible)}
-                    className="absolute right-1 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-md text-muted-foreground hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-400"
-                    aria-label={showPassword ? ui("Hide password") : ui("Show password")}
-                    aria-pressed={showPassword}
-                  >
-                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                  </button>
-                </div>
-                {errors.password && <p className="text-sm text-red-500">{errors.password}</p>}
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="confirmPassword" className="text-sm font-medium">
-                  {t.registerConfirmPassword}
-                </Label>
-                <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                  <Input
-                    id="confirmPassword"
-                    type={showPassword ? "text" : "password"}
-                    placeholder={t.registerConfirmPasswordPlaceholder}
-                    className={`pl-10 pr-10 h-11 ${errors.confirmPassword ? "border-red-500 focus:border-red-500 focus:ring-red-500" : "border-orange-200 dark:border-orange-900 focus:border-orange-400 focus:ring-orange-400"}`}
-                    value={formData.confirmPassword}
-                    onChange={(e) => handleInputChange("confirmPassword", e.target.value)}
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword((visible) => !visible)}
-                    className="absolute right-1 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-md text-muted-foreground hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-400"
-                    aria-label={showPassword ? ui("Hide passwords") : ui("Show passwords")}
-                    aria-pressed={showPassword}
-                  >
-                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                  </button>
-                </div>
-                {errors.confirmPassword && <p className="text-sm text-red-500">{errors.confirmPassword}</p>}
-              </div>
+              <AuthField
+                id="email"
+                type="email"
+                autoComplete="email"
+                label={t.registerEmail}
+                icon={Mail}
+                placeholder={t.registerEmailPlaceholder}
+                value={formData.email}
+                onChange={(e) => handleInputChange("email", e.target.value)}
+                error={errors.email}
+              />
+              <AuthField
+                id="password"
+                type={showPassword ? "text" : "password"}
+                autoComplete="new-password"
+                label={t.registerPassword}
+                icon={Lock}
+                placeholder={t.registerPasswordPlaceholder}
+                value={formData.password}
+                onChange={(e) => handleInputChange("password", e.target.value)}
+                error={errors.password}
+                passwordToggle={{ visible: showPassword, onToggle: () => setShowPassword((visible) => !visible) }}
+              />
+              <AuthField
+                id="confirmPassword"
+                type={showPassword ? "text" : "password"}
+                autoComplete="new-password"
+                label={t.registerConfirmPassword}
+                icon={Lock}
+                placeholder={t.registerConfirmPasswordPlaceholder}
+                value={formData.confirmPassword}
+                onChange={(e) => handleInputChange("confirmPassword", e.target.value)}
+                error={errors.confirmPassword}
+                passwordToggle={{
+                  visible: showPassword,
+                  onToggle: () => setShowPassword((visible) => !visible),
+                  showLabel: ui("Show passwords"),
+                  hideLabel: ui("Hide passwords"),
+                }}
+              />
               <Button
-                className="w-full h-11 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-semibold shadow-md hover:shadow-lg transition-all"
+                className="w-full active:scale-[0.98]"
                 size="lg"
                 onClick={handleContinue}
                 disabled={isLoading}
@@ -276,34 +233,26 @@ const RegisterPage = () => {
           {step === 2 && (
             <motion.div
               key="step2"
-              initial={{ opacity: 0, x: 20 }}
+              initial={{ opacity: 0, x: 16 }}
               animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.3 }}
+              transition={{ duration: 0.3, ease: [0.2, 0.8, 0.2, 1] }}
               className="space-y-4"
             >
-              <div className="text-center">
-                <p className="text-sm text-muted-foreground">{t.registerVerifySubtitle}</p>
-              </div>
+              <p className="text-center text-sm text-muted-foreground">{t.registerVerifySubtitle}</p>
 
               {/* Registered email */}
-              <div className="space-y-2">
-                <Label htmlFor="verifyEmail" className="text-sm font-medium">
-                  {t.registerEmail}
-                </Label>
-                <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                  <Input
-                    id="verifyEmail"
-                    type="email"
-                    className="pl-10 h-11 border-orange-200 dark:border-orange-900 bg-muted/50 text-muted-foreground"
-                    value={formData.email}
-                    readOnly
-                  />
-                </div>
-              </div>
+              <AuthField
+                id="verifyEmail"
+                type="email"
+                label={t.registerEmail}
+                icon={Mail}
+                className="bg-muted/50 text-muted-foreground"
+                value={formData.email}
+                readOnly
+              />
 
               <div className="space-y-2">
-                <Label htmlFor="verifyCode" className="text-sm font-medium">
+                <Label id="verifyCode-label" className="block text-center text-sm font-medium">
                   {t.registerVerifyCode}
                 </Label>
                 <OTPInput
@@ -311,19 +260,21 @@ const RegisterPage = () => {
                   value={formData.verifyCode}
                   onChange={(value) => handleInputChange("verifyCode", value)}
                   disabled={isLoading}
+                  labelledBy="verifyCode-label"
                 />
                 {errors.verifyCode && (
-                  <p className="text-sm text-red-500 text-center">{errors.verifyCode}</p>
+                  <p role="alert" className="text-center text-sm font-medium text-destructive">{errors.verifyCode}</p>
                 )}
               </div>
 
-              <div className="flex items-center justify-end gap-2">
+              <div className="flex items-center justify-center">
                 <Button
                   type="button"
                   variant="outline"
-                  className="h-10 border-orange-200 dark:border-orange-900 hover:bg-orange-50 dark:hover:bg-orange-950 whitespace-nowrap"
+                  className="whitespace-nowrap"
                   onClick={() => doSendCode(false)}
                   disabled={countdown > 0 || isLoading}
+                  aria-live="polite"
                 >
                   {isLoading && countdown === 0
                     ? t.registerSending
@@ -333,8 +284,8 @@ const RegisterPage = () => {
                 </Button>
               </div>
 
-              <div className="flex items-start gap-2 rounded-lg bg-orange-50 dark:bg-orange-950/40 border border-orange-200 dark:border-orange-900 p-3 text-sm text-orange-800 dark:text-orange-200">
-                <Info className="h-4 w-4 mt-0.5 shrink-0" />
+              <div className="flex items-start gap-2.5 rounded-xl border border-brass/40 bg-secondary/60 p-3 text-sm text-foreground">
+                <Info className="mt-0.5 h-4 w-4 shrink-0 text-brass-strong" aria-hidden="true" />
                 <span>{t.registerNoteSentToEmail}</span>
               </div>
 
@@ -342,34 +293,33 @@ const RegisterPage = () => {
                 <Button
                   type="button"
                   variant="outline"
-                  className="h-11 flex-1 border-orange-200 dark:border-orange-900 hover:bg-orange-50 dark:hover:bg-orange-950"
+                  className="flex-1"
                   onClick={goBack}
                   disabled={isLoading}
                 >
                   {t.registerBack}
                 </Button>
                 <Button
-                  className="h-11 flex-1 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-semibold shadow-md hover:shadow-lg transition-all"
+                  className="flex-1 active:scale-[0.98]"
                   size="lg"
                   onClick={handleRegister}
                   disabled={isLoading}
                 >
+                  {isLoading && <Loader2 className="animate-spin" aria-hidden="true" />}
                   {isLoading ? t.registerCreating : t.registerButton}
                 </Button>
               </div>
             </motion.div>
           )}
 
-          <div className="flex flex-col space-y-4 pt-6">
-            <div className="text-center text-sm">
-              <span className="text-muted-foreground">{t.registerHasAccount} </span>
-              <Link
-                to={ROUTES.AUTH.LOGIN}
-                className="font-semibold text-orange-600 hover:text-orange-700 dark:text-orange-400 dark:hover:text-orange-300 transition-colors"
-              >
-                {t.registerLoginLink}
-              </Link>
-            </div>
+          <div className="mt-6 border-t border-border/70 pt-5 text-center text-sm">
+            <span className="text-muted-foreground">{t.registerHasAccount} </span>
+            <Link
+              to={ROUTES.AUTH.LOGIN}
+              className="inline-flex min-h-11 items-center rounded-md font-semibold text-primary underline-offset-4 transition-colors hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            >
+              {t.registerLoginLink}
+            </Link>
           </div>
         </AuthFormLayout>
       </motion.div>

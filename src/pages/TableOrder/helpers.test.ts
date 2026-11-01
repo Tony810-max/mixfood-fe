@@ -5,7 +5,12 @@ describe("table-order helpers", () => {
   afterEach(() => { document.cookie = "lang=;max-age=0;path=/"; });
   it("formats totals using Vietnamese currency", () => {
     document.cookie = "lang=vn;path=/";
-    expect(formatVND(125_000)).toMatch(/125[.\s]000\s?₫/);
+    expect(formatVND(125_000)).toBe("125.000đ");
+  });
+
+  it("formats totals using English currency", () => {
+    document.cookie = "lang=en;path=/";
+    expect(formatVND(125_000)).toBe("125,000đ");
   });
 
   it("creates a new idempotency key for every checkout", () => {

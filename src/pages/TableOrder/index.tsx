@@ -22,6 +22,7 @@ import { useEffect, useState } from 'react';
 import { useParams, Outlet } from 'react-router-dom';
 import { CheckCircle2, QrCode, RefreshCw, TriangleAlert } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Skeleton } from '@/components/ui/skeleton';
 import { useTableSession } from '@/contexts/TableSessionContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import {
@@ -169,14 +170,35 @@ export default function TableOrderPage() {
 
   if (loading) {
     return (
-      <div className="grid min-h-dvh place-items-center bg-background px-6">
-        <div className="surface-panel w-full max-w-sm p-7 text-center" role="status" aria-live="polite">
-          <div className="relative mx-auto mb-4 grid h-16 w-16 place-items-center rounded-2xl bg-primary/10 text-primary">
-            <QrCode className="h-7 w-7" />
-            <span className="absolute inset-0 animate-ping rounded-2xl border border-primary/25" />
+      <div className="mx-auto flex min-h-dvh max-w-lg flex-col bg-background" role="status" aria-live="polite">
+        <div className="bg-primary px-4 pb-4 text-primary-foreground pt-safe-top">
+          <div className="flex items-center gap-3">
+            <div className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-primary-foreground/10 ring-1 ring-brass/60">
+              <QrCode className="h-5 w-5" aria-hidden="true" />
+            </div>
+            <div className="min-w-0">
+              <h1 className="font-serif text-lg font-semibold">{t.openingYourTable}</h1>
+              <p className="text-xs text-primary-foreground/75">{t.loadingTableSession}</p>
+            </div>
           </div>
-          <h1 className="text-xl font-bold">{t.openingYourTable}</h1>
-          <p className="mt-2 text-sm text-muted-foreground">{t.loadingTableSession}</p>
+        </div>
+        <div className="space-y-4 p-4" aria-hidden="true">
+          <Skeleton className="h-11 w-full rounded-xl" />
+          <div className="flex gap-2 overflow-hidden">
+            <Skeleton className="h-11 w-28 shrink-0 rounded-full" />
+            <Skeleton className="h-11 w-24 shrink-0 rounded-full" />
+            <Skeleton className="h-11 w-32 shrink-0 rounded-full" />
+          </div>
+          {[0, 1, 2, 3].map((index) => (
+            <div key={index} className="flex items-center gap-3 rounded-2xl border border-border/80 bg-card p-3">
+              <Skeleton className="h-20 w-20 shrink-0 rounded-xl" />
+              <div className="flex-1 space-y-2">
+                <Skeleton className="h-4 w-3/4" />
+                <Skeleton className="h-4 w-1/3" />
+              </div>
+              <Skeleton className="h-11 w-11 shrink-0 rounded-xl" />
+            </div>
+          ))}
         </div>
       </div>
     );
@@ -185,12 +207,13 @@ export default function TableOrderPage() {
   if (sessionEnded) {
     return (
       <div className="grid min-h-dvh place-items-center bg-background px-6">
-        <div className="surface-panel w-full max-w-sm p-7 text-center">
-          <div className="mx-auto mb-4 grid h-16 w-16 place-items-center rounded-2xl bg-success/10 text-success">
-            <CheckCircle2 className="h-8 w-8" />
+        <div className="relative w-full max-w-sm rounded-2xl border border-border/80 bg-card p-7 text-center shadow-layered" role="status">
+          <span aria-hidden="true" className="pointer-events-none absolute inset-x-8 top-0 h-px bg-brass/70" />
+          <div className="mx-auto mb-4 grid h-16 w-16 place-items-center rounded-full bg-success/10 text-success ring-1 ring-success/30">
+            <CheckCircle2 className="h-8 w-8" aria-hidden="true" />
           </div>
-          <h1 className="text-xl font-bold text-foreground">{t.sessionEnded}</h1>
-          <p className="text-muted-foreground text-sm">
+          <h1 className="font-serif text-xl font-semibold text-foreground">{t.sessionEnded}</h1>
+          <p className="mt-2 text-sm text-muted-foreground">
             {paymentPaidOnEnd
               ? t.sessionEndedPaid
               : t.sessionEndedUnpaid}
@@ -203,14 +226,15 @@ export default function TableOrderPage() {
   if (error) {
     return (
       <div className="grid min-h-dvh place-items-center bg-background px-6">
-        <div className="surface-panel w-full max-w-sm p-7 text-center" role="alert">
-          <div className="mx-auto mb-4 grid h-16 w-16 place-items-center rounded-2xl bg-destructive/10 text-destructive">
-            <TriangleAlert className="h-8 w-8" />
+        <div className="relative w-full max-w-sm rounded-2xl border border-border/80 bg-card p-7 text-center shadow-layered" role="alert">
+          <span aria-hidden="true" className="pointer-events-none absolute inset-x-8 top-0 h-px bg-brass/70" />
+          <div className="mx-auto mb-4 grid h-16 w-16 place-items-center rounded-full bg-destructive/10 text-destructive ring-1 ring-destructive/30">
+            <TriangleAlert className="h-8 w-8" aria-hidden="true" />
           </div>
-          <h1 className="text-xl font-bold text-foreground">{t.connectionError}</h1>
-          <p className="text-muted-foreground text-sm">{error}</p>
-          <Button className="mt-5 w-full" variant="outline" onClick={() => window.location.reload()}>
-            <RefreshCw /> {t.reconnect}
+          <h1 className="font-serif text-xl font-semibold text-foreground">{t.connectionError}</h1>
+          <p className="mt-2 text-sm text-muted-foreground">{error}</p>
+          <Button className="mt-5 w-full active:scale-[0.98]" size="lg" onClick={() => window.location.reload()}>
+            <RefreshCw aria-hidden="true" /> {t.reconnect}
           </Button>
         </div>
       </div>

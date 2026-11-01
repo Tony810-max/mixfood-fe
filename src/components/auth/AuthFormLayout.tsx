@@ -8,10 +8,14 @@ interface AuthFormLayoutProps {
 
 export const AuthFormLayout = ({ children, className }: AuthFormLayoutProps) => {
   return (
-    <div className={cn(
-      "bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-2xl shadow-xl border border-orange-200 dark:border-orange-900/50 p-6 sm:p-8",
-      className
-    )}>
+    <div
+      className={cn(
+        "relative rounded-2xl border border-border/80 bg-card p-6 shadow-layered sm:p-8",
+        className
+      )}
+    >
+      {/* Brass hairline along the top edge of the card */}
+      <span aria-hidden="true" className="pointer-events-none absolute inset-x-8 top-0 h-px bg-brass/70" />
       {children}
     </div>
   );

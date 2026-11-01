@@ -1,11 +1,7 @@
 
-import { useUiText } from '@/contexts/LanguageContext';
-
-import { AuthCard, AuthFormLayout, AuthHeader, AuthLogo } from "@/components/auth";
+import { AuthCard, AuthField, AuthFormLayout, AuthHeader, AuthLogo } from "@/components/auth";
 import Header from "@/components/layout/Header";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { STORAGE_KEYS } from "@/constants";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -14,12 +10,11 @@ import { loginSchema, type LoginFormData } from "@/lib/validation";
 import { ROUTES } from "@/utils/const";
 import { authStorage } from "@/utils/storage";
 import { motion } from "framer-motion";
-import { Eye, EyeOff, Lock, Mail } from "lucide-react";
+import { AlertCircle, Loader2, Lock, Mail } from "lucide-react";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
 const LoginPage = () => {
-  const ui = useUiText();
   const { t } = useLanguage();
   const navigate = useNavigate();
   const { setUser } = useAuth();
@@ -109,9 +104,9 @@ const LoginPage = () => {
     <AuthCard>
       <Header />
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
+        initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
+        transition={{ duration: 0.5, ease: [0.2, 0.8, 0.2, 1] }}
       >
         <AuthFormLayout>
           <AuthLogo />
@@ -121,95 +116,76 @@ const LoginPage = () => {
           />
           <form onSubmit={handleLogin} className="space-y-4">
             {loginError && (
-              <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-400 px-4 py-3 rounded-lg">
-                <p className="text-sm">{loginError}</p>
+              <div
+                role="alert"
+                className="flex items-start gap-2.5 rounded-xl border border-destructive/30 bg-destructive/10 px-4 py-3 text-destructive"
+              >
+                <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
+                <p className="text-sm font-medium">{loginError}</p>
               </div>
             )}
-            <div className="space-y-2">
-              <Label htmlFor="email" className="text-sm font-medium">
-                {t.loginEmailAddress}
-              </Label>
-              <div className="relative">
-                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder={t.loginEmailPlaceholderAddress}
-                  className={`pl-10 h-11 ${errors.email ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : 'border-orange-200 dark:border-orange-900 focus:border-orange-400 focus:ring-orange-400'}`}
-                  value={formData.email}
-                  onChange={(e) => handleInputChange("email", e.target.value)}
-                />
-              </div>
-              {errors.email && <p className="text-sm text-red-500">{errors.email}</p>}
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="password" className="text-sm font-medium">
-                {t.loginPassword}
-              </Label>
-              <div className="relative">
-                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input
-                  id="password"
-                  type={showPassword ? "text" : "password"}
-                  placeholder={t.loginPasswordPlaceholder}
-                  className={`pl-10 pr-10 h-11 ${errors.password ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : 'border-orange-200 dark:border-orange-900 focus:border-orange-400 focus:ring-orange-400'}`}
-                  value={formData.password}
-                  onChange={(e) => handleInputChange("password", e.target.value)}
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword((visible) => !visible)}
-                  className="absolute right-1 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-md text-muted-foreground hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-400"
-                  aria-label={showPassword ? ui("Hide password") : ui("Show password")}
-                  aria-pressed={showPassword}
-                >
-                  {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                </button>
-              </div>
-              {errors.password && <p className="text-sm text-red-500">{errors.password}</p>}
-            </div>
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-2">
+            <AuthField
+              id="email"
+              type="email"
+              autoComplete="email"
+              label={t.loginEmailAddress}
+              icon={Mail}
+              placeholder={t.loginEmailPlaceholderAddress}
+              value={formData.email}
+              onChange={(e) => handleInputChange("email", e.target.value)}
+              error={errors.email}
+            />
+            <AuthField
+              id="password"
+              type={showPassword ? "text" : "password"}
+              autoComplete="current-password"
+              label={t.loginPassword}
+              icon={Lock}
+              placeholder={t.loginPasswordPlaceholder}
+              value={formData.password}
+              onChange={(e) => handleInputChange("password", e.target.value)}
+              error={errors.password}
+              passwordToggle={{ visible: showPassword, onToggle: () => setShowPassword((visible) => !visible) }}
+            />
+            <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-1">
+              <label
+                htmlFor="remember"
+                className="flex min-h-11 cursor-pointer items-center gap-2.5 text-sm font-medium text-foreground"
+              >
                 <input
                   type="checkbox"
                   id="remember"
                   checked={rememberMe}
                   onChange={(e) => setRememberMe(e.target.checked)}
-                  className="h-4 w-4 rounded border-gray-300 text-orange-600 focus:ring-orange-500"
+                  className="h-4 w-4 rounded border-input accent-primary"
                 />
-                <label
-                  htmlFor="remember"
-                  className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
-                >
-                  {t.rememberMe}
-                </label>
-              </div>
+                {t.rememberMe}
+              </label>
               <Link
                 to={ROUTES.AUTH.FORGOT_PASSWORD}
-                className="text-sm font-medium text-orange-600 hover:text-orange-700 dark:text-orange-400 dark:hover:text-orange-300 transition-colors"
+                className="inline-flex min-h-11 items-center rounded-md text-sm font-semibold text-primary underline-offset-4 transition-colors hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               >
                 {t.forgotPassword}
               </Link>
             </div>
             <Button
-              className="w-full h-11 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-semibold shadow-md hover:shadow-lg transition-all"
+              className="w-full active:scale-[0.98]"
               size="lg"
               type="submit"
               disabled={loginMutation.isPending}
             >
+              {loginMutation.isPending && <Loader2 className="animate-spin" aria-hidden="true" />}
               {loginMutation.isPending ? t.loginSigningIn : t.loginButton}
             </Button>
           </form>
-          <div className="flex flex-col space-y-4 pt-6">
-            <div className="text-center text-sm">
-              <span className="text-muted-foreground">{t.noAccount} </span>
-              <Link
-                to={ROUTES.AUTH.REGISTER}
-                className="font-semibold text-orange-600 hover:text-orange-700 dark:text-orange-400 dark:hover:text-orange-300 transition-colors"
-              >
-                {t.registerLink}
-              </Link>
-            </div>
+          <div className="mt-6 border-t border-border/70 pt-5 text-center text-sm">
+            <span className="text-muted-foreground">{t.noAccount} </span>
+            <Link
+              to={ROUTES.AUTH.REGISTER}
+              className="inline-flex min-h-11 items-center rounded-md font-semibold text-primary underline-offset-4 transition-colors hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            >
+              {t.registerLink}
+            </Link>
           </div>
         </AuthFormLayout>
       </motion.div>

@@ -1,7 +1,8 @@
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Save, User } from 'lucide-react';
+import { AlertCircle, Loader2, Save, User } from 'lucide-react';
+import { ProfileSection } from './ProfileSection';
 
 interface UpdateProfileFormProps {
   formData: {
@@ -36,66 +37,69 @@ export const UpdateProfileForm = ({
   labels,
 }: UpdateProfileFormProps) => {
   return (
-    <div className="rounded-2xl border border-primary/25 bg-card/95 p-6 shadow-layered backdrop-blur-sm">
-      <div className="flex items-center gap-3 mb-6">
-        <div className="rounded-lg bg-primary/10 p-2">
-          <User className="h-5 w-5 text-primary" />
-        </div>
-        <h2 className="text-xl font-semibold text-foreground">{labels.title}</h2>
-      </div>
-
-      <form onSubmit={onSubmit} className="space-y-4">
-        <div className="space-y-2">
+    <ProfileSection id="profile-info-title" icon={User} title={labels.title}>
+      <form onSubmit={onSubmit} className="space-y-5" aria-busy={isLoading}>
+        <div className="space-y-1.5">
           <Label htmlFor="name">{labels.fullName}</Label>
           <Input
             id="name"
+            autoComplete="name"
             value={formData.name}
             onChange={(e) => onInputChange('name', e.target.value)}
             placeholder={labels.fullNamePlaceholder}
-            className="h-11 border-primary/25 focus:border-primary focus:ring-primary"
+            aria-invalid={errors.general ? true : undefined}
+            aria-describedby={errors.general ? 'profile-general-error' : undefined}
           />
         </div>
 
-        <div className="space-y-2">
+        <div className="space-y-1.5">
           <Label htmlFor="email">{labels.email}</Label>
           <Input
             id="email"
             type="email"
             value={formData.email}
             readOnly
+            aria-describedby="profile-email-note"
             placeholder={labels.emailPlaceholder}
-            className="h-11 border-primary/25 bg-muted/50 text-muted-foreground cursor-not-allowed focus:ring-0"
+            className="cursor-not-allowed bg-muted/60 text-muted-foreground"
           />
-          <p className="text-xs text-muted-foreground">{labels.emailNote}</p>
+          <p id="profile-email-note" className="text-xs text-muted-foreground">{labels.emailNote}</p>
         </div>
 
-        <div className="space-y-2">
+        <div className="space-y-1.5">
           <Label htmlFor="phone">{labels.phone}</Label>
           <Input
             id="phone"
             type="tel"
+            autoComplete="tel"
+            inputMode="tel"
             value={formData.phone}
             onChange={(e) => onInputChange('phone', e.target.value)}
             placeholder={labels.phonePlaceholder}
-            className="h-11 border-primary/25 focus:border-primary focus:ring-primary"
           />
         </div>
 
         {errors.general && (
-          <div className="text-sm text-red-500 bg-red-50 dark:bg-red-900/20 p-3 rounded-lg">
+          <div
+            id="profile-general-error"
+            role="alert"
+            className="flex min-w-0 items-start gap-2.5 break-words [overflow-wrap:anywhere] rounded-xl border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm font-medium text-destructive"
+          >
+            <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
             {errors.general}
           </div>
         )}
 
         <Button
           type="submit"
-          className="mt-2 h-11 w-full"
+          size="lg"
+          className="w-full active:scale-[0.98] sm:w-auto"
           disabled={isLoading}
         >
-          <Save className="h-4 w-4 mr-2" />
+          {isLoading ? <Loader2 className="animate-spin" aria-hidden="true" /> : <Save aria-hidden="true" />}
           {isLoading ? labels.saving : labels.save}
         </Button>
       </form>
-    </div>
+    </ProfileSection>
   );
 };

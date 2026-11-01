@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,600;9..144,700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Fraunces:ital,opsz,wght@0,9..144,400..700;1,9..144,400..600&display=swap");
 
 @tailwind base;
 @tailwind components;
@@ -58,7 +58,14 @@
 .dish-image-skeleton {
   display: grid;
   place-items: center;
-  background: linear-gradient(110deg, #f1f5f9 10%, #fed7aa 32%, #fff7ed 46%, #fecaca 61%, #f1f5f9 82%);
+  background: linear-gradient(
+    110deg,
+    hsl(var(--muted)) 10%,
+    hsl(var(--secondary)) 34%,
+    hsl(var(--card)) 48%,
+    hsl(var(--secondary)) 62%,
+    hsl(var(--muted)) 82%
+  );
   background-size: 250% 100%;
   animation: dish-image-shimmer 1.25s ease-in-out infinite;
 }
@@ -71,8 +78,8 @@
 
 .dish-image-skeleton-icon,
 .dish-image-skeleton-line {
-  background-color: rgb(255 255 255 / 0.78);
-  box-shadow: 0 1px 2px rgb(154 52 18 / 0.12);
+  background-color: hsl(var(--card) / 0.8);
+  box-shadow: 0 1px 2px hsl(var(--primary) / 0.12);
 }
 
 .dish-image-skeleton-icon {
@@ -89,49 +96,57 @@
 
 @layer base {
   :root {
-    --background: 38 42% 97%;
-    --foreground: 18 27% 12%;
+    /* Modern Thai hospitality: ivory paper, deep basil green, brass and chili accents. */
+    --background: 43 53% 96%;
+    --foreground: 70 6% 14%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 18 27% 12%;
+    --card: 43 100% 99%;
+    --card-foreground: 70 6% 14%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 18 27% 12%;
+    --popover: 43 100% 99%;
+    --popover-foreground: 70 6% 14%;
 
-    /* The red-to-orange "Đặt món ngay" gradient is the shared primary action. */
-    --primary: 0 72% 51%;
-    --primary-foreground: 0 0% 100%;
-    --primary-hover: 0 72% 40%;
-    --primary-gradient-start: 0 72% 51%;
-    --primary-gradient-end: 24 95% 53%;
-    --primary-gradient-start-hover: 0 72% 40%;
-    --primary-gradient-end-hover: 24 95% 43%;
+    /* Deep basil is the primary action; the soft gradient adds depth without gloss. */
+    --primary: 164 40% 17%;
+    --primary-foreground: 43 53% 96%;
+    --primary-hover: 164 38% 24%;
+    --primary-gradient-start: 164 40% 17%;
+    --primary-gradient-end: 162 34% 26%;
+    --primary-gradient-start-hover: 164 38% 22%;
+    --primary-gradient-end-hover: 162 32% 30%;
 
-    --secondary: 34 38% 92%;
-    --secondary-foreground: 18 27% 12%;
+    --secondary: 38 35% 89%;
+    --secondary-foreground: 70 6% 14%;
 
-    --muted: 36 24% 92%;
-    --muted-foreground: 20 10% 42%;
+    --muted: 40 30% 91%;
+    --muted-foreground: 60 5% 36%;
 
-    --accent: 27 82% 94%;
-    --accent-foreground: 18 27% 12%;
-    --accent-hover: 27 70% 90%;
+    --accent: 38 45% 88%;
+    --accent-foreground: 70 6% 14%;
+    --accent-hover: 38 42% 83%;
 
-    --destructive: 0 68% 46%;
-    --destructive-foreground: 210 40% 98%;
+    /* Brass: decorative lines and icons. Use brass-strong for text on ivory (AA). */
+    --brass: 37 39% 46%;
+    --brass-strong: 36 55% 31%;
+    /* Chili / terracotta: spice accents, ratings, highlights. */
+    --spice: 10 52% 45%;
+    --spice-foreground: 0 0% 100%;
 
-    --success: 145 55% 34%;
+    --destructive: 2 66% 39%;
+    --destructive-foreground: 0 0% 100%;
+
+    --success: 142 52% 30%;
     --success-foreground: 0 0% 100%;
     --warning: 36 90% 42%;
     --warning-foreground: 24 30% 10%;
     --info: 204 70% 40%;
     --info-foreground: 0 0% 100%;
 
-    --border: 32 24% 84%;
-    --input: 32 24% 80%;
-    --ring: 0 72% 51%;
+    --border: 38 22% 83%;
+    --input: 38 10% 52%;
+    --ring: 164 40% 28%;
 
-    --radius: 0.875rem;
+    --radius: 0.75rem;
 
     --sidebar-background: 0 0% 98%;
     --sidebar-foreground: 240 5.3% 26.1%;
@@ -143,42 +158,46 @@
     --sidebar-ring: 217.2 91.2% 59.8%;
 
     --shadow-layered:
-      0 1px 2px rgba(69, 39, 20, 0.05), 0 12px 30px -18px rgba(69, 39, 20, 0.3);
+      0 1px 2px rgba(25, 59, 50, 0.05), 0 12px 30px -18px rgba(25, 59, 50, 0.28);
     --shadow-layered-hover:
-      0 2px 4px rgba(69, 39, 20, 0.08), 0 20px 44px -20px rgba(69, 39, 20, 0.38);
+      0 2px 4px rgba(25, 59, 50, 0.08), 0 20px 44px -20px rgba(25, 59, 50, 0.36);
     --easing-mix: cubic-bezier(0.2, 0.8, 0.2, 1);
   }
 
   .dark {
-    --background: 20 22% 8%;
-    --foreground: 35 30% 95%;
-    --card: 20 20% 12%;
-    --card-foreground: 35 30% 95%;
-    --popover: 20 20% 12%;
-    --popover-foreground: 35 30% 95%;
-    --primary: 0 73% 57%;
-    --primary-foreground: 0 0% 100%;
-    --primary-hover: 0 73% 48%;
-    --primary-gradient-start: 0 73% 57%;
-    --primary-gradient-end: 24 92% 58%;
-    --primary-gradient-start-hover: 0 73% 48%;
-    --primary-gradient-end-hover: 24 92% 49%;
-    --secondary: 20 15% 18%;
-    --secondary-foreground: 35 30% 95%;
-    --muted: 20 15% 18%;
-    --muted-foreground: 35 15% 60%;
-    --accent: 20 22% 21%;
-    --accent-foreground: 35 30% 95%;
-    --accent-hover: 20 23% 26%;
-    --border: 20 15% 20%;
-    --input: 20 15% 20%;
-    --ring: 38 60% 55%;
-    --success: 145 48% 46%;
-    --success-foreground: 20 20% 8%;
+    --background: 164 25% 8%;
+    --foreground: 43 40% 94%;
+    --card: 164 22% 11%;
+    --card-foreground: 43 40% 94%;
+    --popover: 164 22% 11%;
+    --popover-foreground: 43 40% 94%;
+    --primary: 38 45% 62%;
+    --primary-foreground: 164 40% 10%;
+    --primary-hover: 38 45% 70%;
+    --primary-gradient-start: 38 45% 62%;
+    --primary-gradient-end: 38 40% 54%;
+    --primary-gradient-start-hover: 38 45% 70%;
+    --primary-gradient-end-hover: 38 40% 62%;
+    --secondary: 164 18% 17%;
+    --secondary-foreground: 43 40% 94%;
+    --muted: 164 18% 17%;
+    --muted-foreground: 43 15% 64%;
+    --accent: 164 20% 20%;
+    --accent-foreground: 43 40% 94%;
+    --accent-hover: 164 20% 25%;
+    --brass: 38 45% 62%;
+    --brass-strong: 38 45% 68%;
+    --spice: 10 55% 58%;
+    --spice-foreground: 164 25% 8%;
+    --border: 164 15% 20%;
+    --input: 164 12% 40%;
+    --ring: 38 45% 62%;
+    --success: 142 45% 46%;
+    --success-foreground: 164 25% 8%;
     --warning: 38 90% 56%;
-    --warning-foreground: 20 20% 8%;
+    --warning-foreground: 164 25% 8%;
     --info: 204 75% 60%;
-    --info-foreground: 20 20% 8%;
+    --info-foreground: 164 25% 8%;
   }
 }
 
@@ -199,6 +218,8 @@
   h5,
   h6 {
     font-family: "Fraunces", serif;
+    font-optical-sizing: auto;
+    letter-spacing: -0.01em;
   }
 }
 
@@ -265,6 +286,126 @@ html {
 
   .surface-panel {
     @apply rounded-2xl border border-border/80 bg-card/95 shadow-layered;
+  }
+
+  /* Editorial label: small caps eyebrow in AA-safe brass. */
+  .eyebrow {
+    @apply font-body text-xs font-semibold uppercase tracking-[0.18em] text-brass-strong;
+  }
+
+  /* Eyebrow on basil surfaces: ivory keeps 4.5:1, brass stays on the rule. */
+  .eyebrow-on-dark {
+    @apply font-body text-xs font-semibold uppercase tracking-[0.18em] text-primary-foreground/80;
+  }
+
+  /* Thin brass hairline used under headings and as section divider. */
+  .brass-rule {
+    @apply block h-px bg-brass;
+  }
+
+  /* Line - diamond - line ornament, pure CSS. */
+  .brass-ornament {
+    @apply relative block h-3 w-28;
+    background:
+      linear-gradient(hsl(var(--brass)), hsl(var(--brass))) left center / calc(50% - 0.75rem) 1px no-repeat,
+      linear-gradient(hsl(var(--brass)), hsl(var(--brass))) right center / calc(50% - 0.75rem) 1px no-repeat;
+  }
+
+  .brass-ornament::after {
+    content: "";
+    @apply absolute left-1/2 top-1/2 h-2 w-2 -translate-x-1/2 -translate-y-1/2 rotate-45 border border-brass;
+  }
+
+  /* Animated brass underline for nav links (transform only). */
+  .nav-underline {
+    @apply relative;
+  }
+
+  .nav-underline::after {
+    content: "";
+    @apply absolute inset-x-0 -bottom-1.5 h-0.5 origin-left scale-x-0 rounded-full bg-brass;
+    transition: transform 240ms var(--easing-mix);
+  }
+
+  .nav-underline:hover::after,
+  .nav-underline[aria-current="page"]::after {
+    @apply scale-x-100;
+  }
+
+  /* Card lift: translate + layered shadow. */
+  .card-lift {
+    transition: transform 200ms var(--easing-mix), box-shadow 200ms var(--easing-mix), border-color 200ms var(--easing-mix);
+  }
+
+  .card-lift:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-layered-hover);
+  }
+
+  /* Sand-toned shimmer for skeletons. */
+  .skeleton-shimmer {
+    background: linear-gradient(100deg, hsl(var(--muted)) 20%, hsl(var(--secondary)) 45%, hsl(var(--muted)) 70%);
+    background-size: 220% 100%;
+    animation: dish-image-shimmer 1.4s ease-in-out infinite;
+  }
+
+  /* Arch figure: true semicircle top (40% of a 4:5 box equals half its width). */
+  .arch-shape {
+    border-radius: 50% 50% 1rem 1rem / 40% 40% 1rem 1rem;
+  }
+
+  /* Outer ring around .arch-shape: inner radius + 0.625rem gap (incl. 1px border) = concentric. */
+  .arch-frame {
+    border-radius: 50% 50% 1.625rem 1.625rem / 40.4% 40.4% 1.625rem 1.625rem;
+  }
+
+  /* Soft fade on both ends of the dish marquee. */
+  .marquee-mask {
+    -webkit-mask-image: linear-gradient(to right, transparent, hsl(var(--foreground)) 7%, hsl(var(--foreground)) 93%, transparent);
+    mask-image: linear-gradient(to right, transparent, hsl(var(--foreground)) 7%, hsl(var(--foreground)) 93%, transparent);
+  }
+
+  /* Filled buttons: clipped diagonal shine, tinted with --shine (an hsl triplet token). */
+  .btn-shine {
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
+  }
+
+  .btn-shine::after {
+    content: "";
+    position: absolute;
+    inset-block: 0;
+    left: 0;
+    width: 55%;
+    pointer-events: none;
+    transform: translateX(-140%) skewX(-18deg);
+    background: linear-gradient(105deg, transparent, hsl(var(--shine, var(--primary-foreground)) / 0.24), transparent);
+  }
+
+  /* Trailing icon nudge: only a svg that follows the label. */
+  .btn-nudge > svg:last-child {
+    transition: transform 200ms var(--easing-mix);
+  }
+
+  @media (hover: hover) and (prefers-reduced-motion: no-preference) {
+    .btn-shine:hover:not(:disabled, [aria-disabled="true"])::after {
+      transform: translateX(300%) skewX(-18deg);
+      transition: transform 700ms var(--easing-mix);
+    }
+
+    .btn-nudge:hover:not(:disabled) > svg.lucide-arrow-right:last-child,
+    .btn-nudge:hover:not(:disabled) > svg.lucide-chevron-right:last-child {
+      transform: translateX(2px);
+    }
+
+    .btn-nudge:hover:not(:disabled) > svg.lucide-arrow-up-right:last-child {
+      transform: translate(2px, -2px);
+    }
+
+    .btn-nudge:hover:not(:disabled) > svg.lucide-arrow-down:last-child {
+      transform: translateY(2px);
+    }
   }
 
   .scrollbar-hide {

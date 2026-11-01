@@ -1,28 +1,33 @@
-
-import { useUiText } from '@/contexts/LanguageContext';
 import { useEffect, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
-import { ArrowUpRight, RotateCcw, SearchX, Utensils } from "lucide-react";
+import { ArrowUpRight, RotateCcw, SearchX } from "lucide-react";
+import heroDish from "@/assets/hero-dish.jpg";
+import { useSiteCopy } from "@/components/brand/copy";
 import Footer from "@/components/layout/Footer";
 import Header from "@/components/layout/Header";
-import { useLanguage } from "@/contexts/LanguageContext";
+import { Reveal, Stagger, StaggerItem } from "@/components/motion";
+import { Button } from "@/components/ui/button";
+import { EmptyState } from "@/components/ui/empty-state";
+import { ErrorState } from "@/components/ui/error-state";
+import { NativeSelect } from "@/components/ui/native-select";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useLanguage, useUiText } from "@/contexts/LanguageContext";
 import { useMenu } from "@/hooks/api/useMenu";
 import { ROUTES } from "@/utils/const";
-import heroDish from "@/assets/hero-dish.jpg";
 import CategorySection from "../CategorySection";
 import SearchContent from "./SearchContent";
 
-const normalizeSearch = (value: string) => value.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/đ/g, "d").replace(/Đ/g, "D").toLowerCase().replace(/\s+/g, "");
+const normalizeSearch = (value: string) => value.normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/đ/g, "d").replace(/Đ/g, "D").toLowerCase().replace(/\s+/g, "");
 
 const MenuContent = () => {
   const ui = useUiText();
   const { lang, t } = useLanguage();
+  const copy = useSiteCopy();
   const { data: categories, isLoading, error, refetch } = useMenu();
   const [searchParams] = useSearchParams();
   const requestedQuery = searchParams.get("q") ?? "";
   const [searchQuery, setSearchQuery] = useState(requestedQuery);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-  const vn = lang === "vn";
 
   useEffect(() => setSearchQuery(requestedQuery), [requestedQuery]);
 
@@ -41,65 +46,121 @@ const MenuContent = () => {
     <div className="min-h-screen bg-background">
       <Header />
       <main className="pt-16 md:pt-20">
-        <section className="overflow-hidden border-b border-border/70 bg-secondary/30">
-          <div className="page-container grid items-center gap-7 py-10 sm:py-14 md:grid-cols-[1fr_auto]">
-            <div className="max-w-2xl">
-              <p className="mb-4 flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-primary"><Utensils className="h-4 w-4" /> {ui("MIX FOOD · THAI KITCHEN") }</p>
-              <h1 className="font-serif text-4xl font-semibold leading-tight md:text-6xl">{t.menuTitle}<span className="text-primary">.</span></h1>
-              <p className="mt-4 max-w-lg text-sm leading-7 text-muted-foreground md:text-base">{t.menuSubtitle}</p>
-              <p className="mt-5 text-xs text-muted-foreground">{vn ? "Chạm vào món ăn để xem ảnh và mô tả chi tiết." : "Tap a dish to see the photo and full description."}</p>
+        <section aria-labelledby="menu-title" className="overflow-hidden border-b border-border bg-secondary/50">
+          <div className="page-container grid grid-cols-[minmax(0,1fr)] items-center gap-8 py-12 sm:py-16 md:grid-cols-[minmax(0,1fr)_auto] md:gap-14">
+            <Stagger onMount stagger={0.08} className="max-w-2xl">
+              <StaggerItem>
+                <p className="eyebrow mb-5 flex items-center gap-3">
+                  <span aria-hidden="true" className="brass-rule w-8 shrink-0" />
+                  {ui("MIX FOOD · THAI KITCHEN")}
+                </p>
+              </StaggerItem>
+              <StaggerItem>
+                <h1 id="menu-title" className="font-serif text-[clamp(2.5rem,7vw,4.25rem)] font-semibold leading-[1.05] text-foreground">
+                  {t.menuTitle}
+                  <span className="text-brass">.</span>
+                </h1>
+              </StaggerItem>
+              <StaggerItem>
+                <p className="mt-5 max-w-lg text-base leading-7 text-muted-foreground">{t.menuSubtitle}</p>
+              </StaggerItem>
+              <StaggerItem>
+                <p className="mt-5 inline-flex items-center gap-3 text-sm text-muted-foreground">
+                  <span aria-hidden="true" className="brass-ornament" />
+                  {copy.menuHint}
+                </p>
+              </StaggerItem>
+            </Stagger>
+            <div className="relative hidden md:block" aria-hidden="true">
+              <span className="absolute inset-0 translate-x-2 translate-y-2 rounded-t-[7rem] rounded-b-2xl border border-brass/70" />
+              <img
+                src={heroDish}
+                alt=""
+                width={1024}
+                height={1024}
+                decoding="async"
+                className="relative aspect-[4/5] w-44 rounded-t-[7rem] rounded-b-2xl object-cover shadow-layered lg:w-52 lg:rounded-t-[8rem]"
+              />
             </div>
-            <img src={heroDish} alt={t.heroTomYum} className="hidden h-48 w-48 rotate-3 rounded-[3.5rem_1rem_3.5rem_1rem] object-cover shadow-layered md:block lg:h-56 lg:w-56" />
           </div>
         </section>
 
-        <div className="sticky top-16 md:top-20 z-30 border-b border-border/70 bg-background/95 backdrop-blur-md">
-          <div className="page-container py-4">
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-              <p aria-live="polite" className="text-xs text-muted-foreground">{isLoading ? t.menuLoading : error ? t.menuLoadError : <><span className="font-semibold text-foreground">{count}</span> {vn ? "món ăn dành cho bạn" : "dishes to discover"}</>}</p>
-              <div className="w-full sm:max-w-sm"><SearchContent value={searchQuery} onSearchChange={setSearchQuery} /></div>
+        <div className="sticky top-16 z-30 border-b border-border bg-background shadow-layered md:top-20">
+          <div className="page-container py-3">
+            <div className="grid grid-cols-[minmax(0,1fr)] gap-2.5 min-[560px]:grid-cols-[minmax(0,1fr)_14rem] min-[560px]:gap-3 lg:grid-cols-[minmax(0,1fr)_16rem]">
+              <SearchContent value={searchQuery} onSearchChange={setSearchQuery} />
+              <div className="min-w-0">
+                <label htmlFor="menu-category" className="sr-only">{copy.dishCategory}</label>
+                <NativeSelect
+                  id="menu-category"
+                  value={selectedCategory ?? ""}
+                  onChange={(event) => setSelectedCategory(event.target.value || null)}
+                >
+                  <option value="">{copy.allDishes}</option>
+                  {categories?.map((category) => <option key={category.id} value={category.id}>{category[lang] || category.en || category.vn}</option>)}
+                </NativeSelect>
+              </div>
             </div>
-            <label className="mt-3 block text-xs font-medium">
-              {vn ? "Danh mục món ăn" : "Dish category"}
-              <select value={selectedCategory ?? ""} onChange={(event) => setSelectedCategory(event.target.value || null)} className="mt-2 min-h-11 w-full rounded-xl border border-border bg-card px-3 text-sm sm:max-w-sm">
-                <option value="">{vn ? "Tất cả món" : "All dishes"}</option>
-                {categories?.map((category) => <option key={category.id} value={category.id}>{category[lang] || category.en || category.vn}</option>)}
-              </select>
-            </label>
+            <p aria-live="polite" className="sr-only sm:not-sr-only sm:mt-2 sm:text-xs sm:text-muted-foreground">
+              {isLoading ? t.menuLoading : error ? t.menuLoadError : <><span className="font-semibold tabular-nums text-foreground">{count}</span> {copy.dishesCount}</>}
+            </p>
           </div>
         </div>
 
-        <div className="page-container space-y-12 py-8 md:space-y-16 md:py-12">
+        <div className="page-container space-y-12 py-10 md:space-y-16 md:py-14">
           {isLoading ? (
-            <div role="status" aria-label={t.menuLoading} className="grid grid-cols-2 gap-3 md:grid-cols-3 md:gap-5 xl:grid-cols-4">
-              {Array.from({ length: 8 }, (_, index) => <div key={index} aria-hidden="true" className="overflow-hidden rounded-2xl border border-border/70 bg-card"><div className="aspect-[4/3] animate-pulse bg-secondary" /><div className="p-5"><div className="h-4 w-3/4 animate-pulse rounded bg-secondary" /></div></div>)}
-              <span className="sr-only">{t.menuLoading}</span>
+            <div role="status" aria-label={t.menuLoading} className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-3 md:gap-5 xl:grid-cols-4 xl:gap-6">
+              {Array.from({ length: 8 }, (_, index) => (
+                <div key={index} aria-hidden="true" className="overflow-hidden rounded-2xl border border-border bg-card">
+                  <Skeleton className="aspect-[4/3] w-full rounded-none" />
+                  <div className="space-y-3 p-4">
+                    <Skeleton className="h-4 w-3/4" />
+                    <Skeleton className="h-4 w-1/3" />
+                  </div>
+                </div>
+              ))}
             </div>
           ) : error ? (
-            <div role="alert" className="rounded-3xl border border-border bg-card px-5 py-16 text-center">
-              <p className="text-muted-foreground">{t.menuLoadError}</p>
-              <button type="button" onClick={() => void refetch()} className="mx-auto mt-5 inline-flex min-h-11 items-center gap-2 rounded-full bg-primary px-5 text-sm font-semibold text-primary-foreground"><RotateCcw className="h-4 w-4" />{t.menuRetry}</button>
-            </div>
+            <ErrorState
+              title={t.menuLoadError}
+              action={
+                <Button type="button" onClick={() => void refetch()}>
+                  <RotateCcw aria-hidden="true" />
+                  {t.menuRetry}
+                </Button>
+              }
+            />
           ) : filteredCategories.length ? (
             filteredCategories.map((category) => <CategorySection key={category.id + ":" + query} category={category} lang={lang} />)
           ) : (
-            <div className="rounded-3xl border border-dashed border-border px-5 py-16 text-center">
-              <SearchX aria-hidden="true" className="mx-auto mb-4 h-9 w-9 text-muted-foreground" />
-              <p className="font-serif text-xl">{t.menuNoDishes}</p>
-              <button type="button" onClick={clearFilters} className="mt-4 min-h-11 text-sm font-semibold text-primary underline underline-offset-4">{vn ? "Xóa bộ lọc và tìm lại" : "Clear filters and start again"}</button>
-            </div>
+            <EmptyState
+              icon={SearchX}
+              title={t.menuNoDishes}
+              description={copy.noResultsHint}
+              action={
+                <Button type="button" variant="outline" onClick={clearFilters}>
+                  {t.clearFilters}
+                </Button>
+              }
+            />
           )}
         </div>
 
-        <section className="page-container pb-12 md:pb-20">
-          <div className="flex flex-col items-start justify-between gap-6 rounded-3xl bg-[#30251f] p-7 text-[#fff8ee] sm:flex-row sm:items-center md:p-10">
+        <section aria-labelledby="menu-cta-title" className="page-container pb-14 md:pb-20">
+          <Reveal className="relative flex flex-col items-start justify-between gap-6 overflow-hidden rounded-2xl bg-primary p-7 text-primary-foreground sm:flex-row sm:items-center md:p-10">
+            <span aria-hidden="true" className="absolute inset-x-0 top-0 h-px bg-brass/70" />
             <div>
-              <p className="mb-3 text-xs font-semibold uppercase tracking-[0.18em] text-[#eabda4]">{ui("MIX FOOD · DA NANG") }</p>
-              <h2 className="font-serif text-2xl font-semibold md:text-3xl">{t.menuReadyToDine}</h2>
-              <p className="mt-3 max-w-lg text-sm leading-6 text-[#e4d4c8]">{t.menuReadyToDineDesc}</p>
+              <p className="eyebrow-on-dark mb-3">{ui("MIX FOOD · DA NANG")}</p>
+              <h2 id="menu-cta-title" className="font-serif text-2xl font-semibold md:text-3xl">{t.menuReadyToDine}</h2>
+              <p className="mt-3 max-w-lg text-sm leading-6 text-primary-foreground/80">{t.menuReadyToDineDesc}</p>
             </div>
-            <Link to={ROUTES.BOOKING} className="inline-flex min-h-12 shrink-0 items-center gap-3 rounded-full bg-[#fff8ee] px-6 text-sm font-semibold text-[#30251f] transition-colors hover:bg-white">{t.reserveTable}<ArrowUpRight className="h-4 w-4" /></Link>
-          </div>
+            <Button asChild variant="onDark" size="lg" className="shrink-0">
+              <Link to={ROUTES.BOOKING}>
+                {t.reserveTable}
+                <ArrowUpRight aria-hidden="true" />
+              </Link>
+            </Button>
+          </Reveal>
         </section>
       </main>
       <Footer />

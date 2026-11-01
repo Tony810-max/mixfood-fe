@@ -4,6 +4,7 @@ import { Bot, MessageCircle, Send, X } from 'lucide-react';
 import { FormEvent, useEffect, useRef, useState } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { io } from 'socket.io-client';
+import { useLocation } from 'react-router-dom';
 
 type ChatMessage = { id: number | string; sender: 'USER' | 'BOT'; text: string; localized?: boolean };
 type TypingEvent = { senderType: 'VISITOR' | 'STAFF'; isTyping: boolean };
@@ -26,7 +27,7 @@ function getReply(message: string) {
 
 function TypingIndicator({ staff }: { staff: boolean }) {
   const ui = useUiText();
-  return <div className="flex justify-start"><span className="flex items-center gap-1.5 rounded-2xl bg-muted px-3 py-2 text-xs text-muted-foreground"><span>{staff ? ui("Nhân viên đang nhập") : ui("Đang nhập")}</span><span className="flex items-center gap-1"><i className="typing-wave-dot size-1.5 rounded-full bg-black" style={{ animationDelay: '0ms' }} /><i className="typing-wave-dot size-1.5 rounded-full bg-black" style={{ animationDelay: '150ms' }} /><i className="typing-wave-dot size-1.5 rounded-full bg-black" style={{ animationDelay: '300ms' }} /></span></span></div>;
+  return <div className="flex justify-start" role="status"><span className="flex items-center gap-1.5 rounded-2xl rounded-bl-md bg-muted px-3 py-2 text-xs text-muted-foreground"><span>{staff ? ui("Nhân viên đang nhập") : ui("Đang nhập")}</span><span className="flex items-center gap-1" aria-hidden="true"><i className="typing-wave-dot size-1.5 rounded-full bg-muted-foreground" style={{ animationDelay: '0ms' }} /><i className="typing-wave-dot size-1.5 rounded-full bg-muted-foreground" style={{ animationDelay: '150ms' }} /><i className="typing-wave-dot size-1.5 rounded-full bg-muted-foreground" style={{ animationDelay: '300ms' }} /></span></span></div>;
 }
 
 export default function SupportChatbot() {
@@ -39,6 +40,17 @@ export default function SupportChatbot() {
   const [staffTyping, setStaffTyping] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>([{ id: 0, sender: 'BOT', text: ui("Xin chào! Bạn cần Mix Food hỗ trợ thông tin gì?") }]);
   const socketRef = useRef<ReturnType<typeof io> | null>(null);
+  const { pathname } = useLocation();
+  const inputRef = useRef<HTMLInputElement>(null);
+  const launcherRef = useRef<HTMLButtonElement>(null);
+  const wasOpenRef = useRef(false);
+
+  // Focus management: into the panel when it opens, back to the launcher when it closes.
+  useEffect(() => {
+    if (open) inputRef.current?.focus();
+    else if (wasOpenRef.current) launcherRef.current?.focus();
+    wasOpenRef.current = open;
+  }, [open]);
 
   useEffect(() => {
     const visitorId = localStorage.getItem('mixfood.website-chat-visitor') ?? crypto.randomUUID();
@@ -80,14 +92,28 @@ export default function SupportChatbot() {
     setInput('');
   };
 
+  // QR table-ordering screens have an in-flow bottom stack (cart bar, quick actions, tab bar,
+  // plus a message form on the chat tab). Lift the launcher/panel above it so it never covers those controls.
+  const inTableOrder = pathname.startsWith('/q/');
+  const positionClass = inTableOrder
+    ? (pathname.endsWith('/chat') ? 'bottom-[calc(env(safe-area-inset-bottom)+17.5rem)]' : 'bottom-[calc(env(safe-area-inset-bottom)+13rem)]')
+    : 'bottom-24';
+
   // Keep the launcher clear of the footer's legal/navigation row on short screens.
-  return <div className="fixed bottom-24 right-5 z-50 sm:right-6">
-    {open && <section className="mb-3 flex h-[28rem] w-80 flex-col rounded-2xl border bg-card shadow-2xl" aria-label={ui("Trợ lý Mix Food")}>
-      <header className="flex items-center justify-between border-b px-4 py-3"><b className="flex items-center gap-2"><Bot className="text-primary" />{mode === 'BOT' ? ui("Trợ lý Mix Food") : lang === 'vn' ? 'Nhân viên hỗ trợ' : 'Staff support'}</b><button onClick={() => setOpen(false)} aria-label={ui("Đóng")}><X className="size-4" /></button></header>
-      <div className="flex-1 space-y-2 overflow-y-auto p-3">{messages.map((message) => <div key={message.id} className={`flex ${message.sender === 'USER' ? 'justify-end' : 'justify-start'}`}><p className={`max-w-[85%] rounded-2xl px-3 py-2 text-sm ${message.sender === 'USER' ? 'bg-primary-gradient text-primary-foreground' : 'bg-muted text-foreground'}`}>{message.localized ? ui(message.text) : message.text}</p></div>)}{botTyping && <TypingIndicator staff={false} />}{staffTyping && <TypingIndicator staff />}</div>
-      <nav className="border-t px-3 py-2 text-xs" aria-label={ui("Chuyển chế độ chat")}><button className="w-full rounded-lg border border-primary/30 px-2 py-1.5 text-primary" onClick={() => setMode(mode === 'BOT' ? 'STAFF' : 'BOT')}>{mode === 'BOT' ? (lang === 'vn' ? 'Chat nhân viên' : ui("Chat with staff")) : (lang === 'vn' ? ui("Chat với bot") : ui("Chat with bot"))}</button></nav>
-      <form className="flex items-center gap-2 border-t p-3" onSubmit={send}><input className="h-11 min-w-0 flex-1 rounded-xl border bg-background px-3 text-sm text-foreground outline-none placeholder:text-muted-foreground focus:ring-2 focus:ring-primary" value={input} onChange={(event) => { setInput(event.target.value); if (mode === 'STAFF') emitStaffTyping(event.target.value); }} placeholder={mode === 'BOT' ? (lang === 'vn' ? 'Nhập câu hỏi của bạn...' : 'Ask a question...') : (lang === 'vn' ? 'Nhắn cho nhân viên...' : 'Message staff...')} /><button className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-primary-gradient text-primary-foreground shadow-sm disabled:opacity-50" disabled={!input.trim() || botTyping} aria-label={ui("Gửi tin nhắn")}><Send className="size-4" /></button></form>
+  const sideClass = inTableOrder ? 'left-4 sm:left-6' : 'right-4 sm:right-6';
+  return <div className={`fixed ${positionClass} ${sideClass} z-50`}>
+    {open && <section
+      role="dialog"
+      aria-modal="false"
+      aria-labelledby="support-chat-title"
+      onKeyDown={(event) => { if (event.key === 'Escape') setOpen(false); }}
+      className={`mb-3 flex ${inTableOrder ? "h-[min(24rem,calc(100dvh-24rem))] min-h-48" : "h-[min(28rem,calc(100dvh-9rem))]"} w-[min(20rem,calc(100vw-2rem))] flex-col overflow-hidden rounded-2xl border border-border/80 bg-card shadow-layered-hover motion-safe:animate-in motion-safe:fade-in-0 motion-safe:slide-in-from-bottom-2 motion-safe:duration-200`}
+    >
+      <header className="flex items-center justify-between border-b border-border/70 bg-secondary/40 px-4 py-2.5"><h2 id="support-chat-title" className="flex items-center gap-2 font-serif text-base font-semibold text-foreground"><Bot className="size-5 text-primary" aria-hidden="true" />{mode === 'BOT' ? ui("Trợ lý Mix Food") : lang === 'vn' ? 'Nhân viên hỗ trợ' : 'Staff support'}</h2><button type="button" onClick={() => setOpen(false)} className="grid size-11 place-items-center rounded-lg text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" aria-label={ui("Đóng")}><X className="size-4" aria-hidden="true" /></button></header>
+      <div className="flex-1 space-y-2 overflow-y-auto p-3" role="log" aria-live="polite" aria-label={mode === 'BOT' ? ui("Trợ lý Mix Food") : lang === 'vn' ? 'Nhân viên hỗ trợ' : 'Staff support'}>{messages.map((message) => <div key={message.id} className={`flex ${message.sender === 'USER' ? 'justify-end' : 'justify-start'}`}><p className={`max-w-[85%] break-words rounded-2xl px-3 py-2 text-sm leading-relaxed ${message.sender === 'USER' ? 'rounded-br-md bg-primary text-primary-foreground' : 'rounded-bl-md border border-border/70 bg-background text-foreground'}`}>{message.localized ? ui(message.text) : message.text}</p></div>)}{botTyping && <TypingIndicator staff={false} />}{staffTyping && <TypingIndicator staff />}</div>
+      <nav className="border-t border-border/70 px-3 py-2 text-xs" aria-label={ui("Chuyển chế độ chat")}><button type="button" className="min-h-11 w-full rounded-xl border border-primary/30 px-2 py-1.5 font-semibold text-primary transition-colors hover:bg-primary/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" onClick={() => setMode(mode === 'BOT' ? 'STAFF' : 'BOT')}>{mode === 'BOT' ? (lang === 'vn' ? 'Chat nhân viên' : ui("Chat with staff")) : (lang === 'vn' ? ui("Chat với bot") : ui("Chat with bot"))}</button></nav>
+      <form className="flex items-center gap-2 border-t border-border/70 p-3" onSubmit={send}><input ref={inputRef} className="h-11 min-w-0 flex-1 rounded-xl border border-input bg-background px-3 text-base text-foreground outline-none transition-[border-color,box-shadow] placeholder:text-muted-foreground focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/20 md:text-sm" value={input} aria-label={mode === 'BOT' ? ui("Ask the bot a question...") : ui("Message our staff...")} onChange={(event) => { setInput(event.target.value); if (mode === 'STAFF') emitStaffTyping(event.target.value); }} placeholder={mode === 'BOT' ? (lang === 'vn' ? 'Nhập câu hỏi của bạn...' : 'Ask a question...') : (lang === 'vn' ? 'Nhắn cho nhân viên...' : 'Message staff...')} /><button type="submit" className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-primary text-primary-foreground shadow-sm transition-[transform,opacity] active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50" disabled={!input.trim() || botTyping} aria-label={ui("Gửi tin nhắn")}><Send className="size-4" aria-hidden="true" /></button></form>
     </section>}
-    {!open && <button onClick={() => setOpen(true)} className="grid size-14 place-items-center rounded-full bg-primary-gradient text-primary-foreground shadow-lg" aria-label={ui("Mở trợ lý hỗ trợ")}><MessageCircle /></button>}
+    {!open && <button type="button" ref={launcherRef} onClick={() => setOpen(true)} className="grid size-14 place-items-center rounded-full bg-primary text-primary-foreground shadow-layered-hover ring-1 ring-brass/60 ring-offset-2 ring-offset-background transition-transform hover:-translate-y-0.5 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" aria-label={ui("Mở trợ lý hỗ trợ")} aria-expanded={false} aria-haspopup="dialog"><MessageCircle aria-hidden="true" /></button>}
   </div>;
 }

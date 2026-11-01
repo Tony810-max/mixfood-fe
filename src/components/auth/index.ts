@@ -1,4 +1,5 @@
 export { AuthCard } from './AuthCard';
+export { AuthField } from './AuthField';
 export { AuthFormLayout } from './AuthFormLayout';
 export { AuthHeader } from './AuthHeader';
 export { AuthLogo } from './AuthLogo';
