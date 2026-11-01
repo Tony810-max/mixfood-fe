@@ -1,4 +1,4 @@
-import interiorImg from "@/assets/restaurant-interior.jpg";
+import fourFlavoursImg from "@/assets/thai-four-flavours.jpg";
 import { useSiteCopy } from "@/components/brand/copy";
 import { Reveal, Stagger, StaggerItem } from "@/components/motion";
 import ReserveButton from "@/components/navigation/ReserveButton";
@@ -16,19 +16,15 @@ const About = () => {
     <section id="about" aria-labelledby="about-title" className="relative scroll-mt-20 overflow-hidden bg-primary py-16 text-primary-foreground md:py-24">
       <div className="page-container">
         <div className="grid grid-cols-1 items-center gap-10 md:gap-14 lg:grid-cols-[1fr_1.05fr] lg:gap-20">
-          <Reveal className="relative order-first">
-            <span
-              aria-hidden="true"
-              className="absolute inset-0 -translate-x-2.5 translate-y-2.5 rounded-2xl border border-brass/70"
-            />
+          <Reveal className="relative order-first rounded-[1.625rem] border border-brass/60 p-2.5">
             <img
-              src={interiorImg}
-              alt={ui("Mix Food restaurant interior")}
-              width={1200}
-              height={800}
+              src={fourFlavoursImg}
+              alt={ui("Four Thai flavours: sea salt and fish sauce, palm sugar, chillies, lime and tamarind")}
+              width={1448}
+              height={1086}
               loading="lazy"
               decoding="async"
-              className="relative aspect-[4/3] w-full rounded-2xl object-cover shadow-layered-hover"
+              className="aspect-[4/3] w-full rounded-2xl object-cover shadow-layered"
             />
           </Reveal>
 

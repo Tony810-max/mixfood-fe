@@ -1,4 +1,5 @@
 export const uiCopy: Record<string, string> = {
+  'Four Thai flavours: sea salt and fish sauce, palm sugar, chillies, lime and tamarind': 'Bốn vị Thái: muối biển và nước mắm, đường thốt nốt, ớt, chanh và me',
   'Thai dishes at Mix Food in Da Nang': 'Các món ăn Thái tại Mix Food Đà Nẵng',
   'Mix Food Logo': 'Logo Mix Food', 'Address': 'Địa Chỉ', 'Phone': 'Điện Thoại', 'Password': 'Mật khẩu',
   'Hide password': 'Ẩn mật khẩu', 'Show password': 'Hiện mật khẩu', 'Hide passwords': 'Ẩn mật khẩu', 'Show passwords': 'Hiện mật khẩu',
