@@ -1,6 +1,6 @@
 import heroDish from "@/assets/hero-dish.jpg";
 import { useSiteCopy } from "@/components/brand/copy";
-import { EASE_MIX, Reveal, Stagger, StaggerItem } from "@/components/motion";
+import { Reveal, Stagger, StaggerItem } from "@/components/motion";
 import ReserveButton from "@/components/navigation/ReserveButton";
 import { Button } from "@/components/ui/button";
 import { useLanguage, useUiText } from "@/contexts/LanguageContext";
@@ -13,7 +13,8 @@ import { DishMarquee } from "./DishMarquee";
 
 /**
  * Arched dish photograph inside a concentric brass ring (equal gap on every side).
- * Entrance: clip/scale reveal of the arch, then the ring fades in. A light scroll parallax moves an
+ * Entrance: pure-CSS rise/fade of the figure, then the ring fades in (CSS keyframes always finish, so the
+ * final frame never depends on JS animation state or clip-path support). A light scroll parallax moves an
  * oversized inner wrapper so the radius, the overflow clip and the image sharpness are untouched.
  */
 const HeroFigure = () => {
@@ -24,21 +25,10 @@ const HeroFigure = () => {
   const parallaxY = useTransform(scrollYProgress, [0, 1], [-16, 16]);
 
   return (
-    <figure ref={figureRef} className="relative mx-auto w-full max-w-md justify-self-center lg:max-w-[28rem]">
-      <motion.span
-        aria-hidden="true"
-        className="arch-frame pointer-events-none absolute inset-0 border border-brass/60"
-        initial={reduce ? false : { opacity: 0, scale: 0.97 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.6, delay: 0.45, ease: EASE_MIX }}
-      />
+    <figure ref={figureRef} className="arch-enter relative mx-auto w-full max-w-md justify-self-center lg:max-w-[28rem]">
+      <span aria-hidden="true" className="arch-frame arch-ring-enter pointer-events-none absolute inset-0 border border-brass/60" />
       <div className="p-2.5">
-        <motion.div
-          className="arch-shape relative aspect-[4/5] overflow-hidden shadow-layered"
-          initial={reduce ? false : { clipPath: "inset(10% 10% 0% 10%)", scale: 0.96 }}
-          animate={{ clipPath: "inset(-30% -30% -30% -30%)", scale: 1 }}
-          transition={{ duration: 0.8, delay: 0.1, ease: EASE_MIX }}
-        >
+        <div className="arch-shape relative aspect-[4/5] overflow-hidden shadow-layered">
           <motion.div className="absolute inset-x-0 -inset-y-5 will-change-transform" style={reduce ? undefined : { y: parallaxY }}>
             <img
               src={heroDish}
@@ -56,7 +46,7 @@ const HeroFigure = () => {
             <p className="font-serif text-2xl font-semibold leading-snug sm:text-3xl">{t.heroTomYum}</p>
             <p className="mt-2 max-w-xs text-sm leading-6 text-primary-foreground/85">{t.heroTomYumDesc}</p>
           </figcaption>
-        </motion.div>
+        </div>
       </div>
     </figure>
   );
