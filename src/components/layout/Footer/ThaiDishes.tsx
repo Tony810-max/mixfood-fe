@@ -11,7 +11,7 @@ const ThaiDishes = () => {
       <ul>
         {THAI_DISHES.map((dish) => (
           <li key={dish.href}>
-            <FooterLink to={dish.href}>{dish.name}</FooterLink>
+            <FooterLink to={dish.href}>{t[dish.translationKey]}</FooterLink>
           </li>
         ))}
       </ul>

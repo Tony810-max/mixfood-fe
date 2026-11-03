@@ -10,7 +10,7 @@ import { RESTAURANT, SITE } from '@/constants/site';
 import { ArrowRight, BriefcaseBusiness, Clock3, MapPin, RotateCcw, UsersRound } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 
-import { RECRUITMENT_ROLES as labels, type Recruitment } from '@/constants/recruitment';
+import { RECRUITMENT_ROLES as labels, getRecruitmentName, getRecruitmentSlug, type Recruitment } from '@/constants/recruitment';
 import { Link, useParams } from 'react-router-dom';
 import { API_CONFIG } from '@/constants';
 import { useLanguage, useUiText } from '@/contexts/LanguageContext';
@@ -27,8 +27,8 @@ export default function CareersPage() {
   const [attempt, setAttempt] = useState(0);
   const [applicationPositionId, setApplicationPositionId] = useState<number>();
   const { slug } = useParams();
-  const selectedRole = Object.values(labels).find((role) => role.slug === slug);
-  const visiblePositions = useMemo(() => slug ? positions.filter((job) => labels[job.position].slug === slug) : positions, [positions, slug]);
+  const visiblePositions = useMemo(() => slug ? positions.filter((job) => getRecruitmentSlug(job) === slug) : positions, [positions, slug]);
+  const selectedJob = slug ? visiblePositions[0] : undefined;
 
   useEffect(() => {
     const controller = new AbortController();
@@ -38,7 +38,7 @@ export default function CareersPage() {
       .then((response) => { if (!response.ok) throw new Error('Recruitment unavailable'); return response.json(); })
       .then((data: Recruitment[]) => {
         if (!Array.isArray(data)) throw new Error('Invalid recruitment response');
-        setPositions(data.filter((job) => job.isActive && job.position in labels));
+        setPositions(data.filter((job) => job.isActive && Number.isInteger(job.id) && typeof job.position === 'string'));
       })
       .catch(() => { if (!controller.signal.aborted) setError(true); })
       .finally(() => { if (!controller.signal.aborted) setLoading(false); });
@@ -59,15 +59,15 @@ export default function CareersPage() {
       '@context': 'https://schema.org',
       '@graph': visiblePositions.map((job) => ({
         '@type': 'JobPosting',
-        title: ui(labels[job.position].vn),
-        description: `${labels[job.position].seo} ${labels[job.position].description} Mix Food đang cần tuyển ${job.vacancies} vị trí.`,
+        title: getRecruitmentName(job, lang, ui),
+        description: ui('Apply for {position} at Mix Food in Da Nang. Vacancies: {count}.', { position: getRecruitmentName(job, lang, ui), count: job.vacancies }),
         datePosted: new Date(job.createdAt).toISOString().slice(0, 10),
         employmentType: job.employmentTypes ?? ['PART_TIME', 'FULL_TIME'],
-        ...(job.workingHours?.trim() ? { workHours: job.workingHours.trim() } : {}),
+        ...((job.workingShifts?.length || job.workingHours?.trim()) ? { workHours: job.workingShifts?.length ? job.workingShifts.map((shift) => `${ui(shift.employmentType === 'PART_TIME' ? 'Part-time' : 'Full-time')}: ${shift.startTime}–${shift.endTime}`).join('; ') : job.workingHours.trim() } : {}),
         ...(job.salaryAmount ? { baseSalary: { '@type': 'MonetaryAmount', currency: 'VND', value: { '@type': 'QuantitativeValue', value: job.salaryAmount, unitText: job.salaryUnit === 'MONTH' ? 'MONTH' : 'HOUR' } } } : {}),
         hiringOrganization: { '@type': 'Organization', name: SITE.name, sameAs: SITE.url, email: RESTAURANT.email },
         jobLocation: { '@type': 'Place', address: { '@type': 'PostalAddress', streetAddress: RESTAURANT.address, addressLocality: ui("Đà Nẵng"), addressCountry: 'VN' } },
-        url: `${SITE.url}/careers/${labels[job.position].slug}`,
+        url: `${SITE.url}/careers/${getRecruitmentSlug(job)}`,
       })),
     });
     if (!existing) document.head.appendChild(script);
@@ -91,10 +91,10 @@ export default function CareersPage() {
               </p>
             </StaggerItem>
             <StaggerItem>
-              <h1 id="careers-title" className="mt-5 text-balance font-serif text-4xl font-semibold leading-[1.1] tracking-tight md:text-5xl">{selectedRole ? `Tuyển ${selectedRole.vn.toLowerCase()} tại Đà Nẵng` : ui("Tuyển dụng part-time & full-time tại Đà Nẵng.")}</h1>
+              <h1 id="careers-title" className="mt-5 text-balance font-serif text-4xl font-semibold leading-[1.1] tracking-tight [overflow-wrap:anywhere] md:text-5xl">{selectedJob ? ui('{position} jobs in Da Nang', { position: getRecruitmentName(selectedJob, lang, ui) }) : ui("Tuyển dụng part-time & full-time tại Đà Nẵng.")}</h1>
             </StaggerItem>
             <StaggerItem>
-              <p className="mx-auto mt-5 max-w-2xl text-base leading-7 text-muted-foreground">{ui("Mix Food tìm đồng đội tận tâm cho các vị trí nhân viên phục vụ, phụ bếp và giữ xe. Ứng viên có thể trao đổi ca làm part-time hoặc full-time phù hợp khi phỏng vấn.")}</p>
+              <p className="mx-auto mt-5 max-w-2xl text-base leading-7 text-muted-foreground">{ui('Explore current openings at Mix Food. Choose a position and review its part-time or full-time working hours before applying.')}</p>
             </StaggerItem>
           </Stagger>
         </div>
@@ -118,20 +118,20 @@ export default function CareersPage() {
           action={<Button asChild variant="outline"><Link to={ROUTES.HOME}>{t.home}</Link></Button>}
         /> : <Stagger className={`grid gap-5 ${jobGrid}`} stagger={0.08}>
           {visiblePositions.map((job) => {
-            const position = labels[job.position];
-            return <StaggerItem key={job.id} as="article" className={`card-lift grid content-start gap-5 rounded-2xl border border-border bg-card p-6 shadow-layered ${slug ? '' : 'md:row-span-5 md:grid-rows-subgrid'}`}>
+            const name = getRecruitmentName(job, lang, ui);
+            return <StaggerItem key={job.id} as="article" className={`card-lift grid min-w-0 grid-cols-[minmax(0,1fr)] content-start gap-5 rounded-2xl border border-border bg-card p-6 shadow-layered ${slug ? '' : 'md:row-span-5 md:grid-rows-subgrid'}`}>
               <div className="flex items-center gap-3">
                 <span className="grid size-11 shrink-0 place-items-center rounded-xl border border-brass/40 bg-brass/10 text-brass-strong"><UsersRound className="size-5" aria-hidden="true" /></span>
-                <h2 className="min-w-0 break-words font-serif text-xl font-semibold leading-snug">{slug ? ui(position.vn) : <Link to={`/careers/${position.slug}`} className="rounded-sm hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">{ui(position.vn)}</Link>}</h2>
+                <h2 className="min-w-0 break-words font-serif text-xl font-semibold leading-snug">{slug ? name : <Link to={`/careers/${getRecruitmentSlug(job)}`} className="rounded-sm hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">{name}</Link>}</h2>
               </div>
               <div className="text-sm leading-6 text-muted-foreground">
-                <p>{ui(position.description)}</p>
+                <p>{ui(labels[job.position]?.description ?? 'Join the Mix Food team in Da Nang.')}</p>
                 {slug && <p className="mt-3">{ui("Nơi làm việc:")} {ui(RESTAURANT.address)}{ui(". Ngày đăng:")} <time dateTime={job.createdAt}>{new Date(job.createdAt).toLocaleDateString(ui("vi-VN"))}</time>.</p>}
               </div>
               <div className="space-y-3 border-t border-border pt-5 text-sm text-muted-foreground">
                 <p className="flex items-center gap-2.5"><UsersRound className="size-4 shrink-0 text-brass-strong" aria-hidden="true" /><span className="min-w-0 break-words">{ui("Cần tuyển:")} <b className="font-semibold text-foreground">{job.vacancies} {ui("vị trí")}</b></span></p>
                 <p className="flex items-center gap-2.5"><MapPin className="size-4 shrink-0 text-brass-strong" aria-hidden="true" /><span>{ui("Đà Nẵng")}</span></p>
-                <p className="flex items-center gap-2.5"><Clock3 className="size-4 shrink-0 text-brass-strong" aria-hidden="true" /><span className="whitespace-pre-line break-words">{job.workingHours?.trim() || ui("Trao đổi khi phỏng vấn")}</span></p>
+                <div className="flex items-start gap-2.5"><Clock3 className="mt-1 size-4 shrink-0 text-brass-strong" aria-hidden="true" /><div className="min-w-0 whitespace-pre-line break-words">{job.workingShifts?.length ? job.workingShifts.map((shift, index) => <p key={index}>{ui(shift.employmentType === 'PART_TIME' ? 'Part-time' : 'Full-time')}: {shift.startTime}–{shift.endTime}{shift.endTime < shift.startTime ? ` (${ui('next day')})` : ''}</p>) : job.workingHours?.trim() || ui("Trao đổi khi phỏng vấn")}</div></div>
               </div>
               <div className="flex flex-wrap content-start gap-2">{(job.employmentTypes ?? ['PART_TIME', 'FULL_TIME']).map((type) => <Badge key={type} variant="brass" className="px-3 py-1">{ui(type === 'PART_TIME' ? 'Part-time' : 'Full-time')}</Badge>)}</div>
               <div className="flex flex-wrap items-end justify-between gap-3 border-t border-border pt-4">

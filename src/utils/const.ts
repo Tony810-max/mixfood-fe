@@ -27,11 +27,11 @@ export const ROUTES = {
 } as const;
 
 export const THAI_DISHES = [
-  { name: "Tom Yum", href: ROUTES.MENU_ITEMS.TOM_YUM },
-  { name: "Pad Thai", href: ROUTES.MENU_ITEMS.PAD_THAI },
-  { name: "Som Tam", href: ROUTES.MENU_ITEMS.SOM_TAM },
-  { name: "Mango Sticky Rice", href: ROUTES.MENU_ITEMS.DESSERTS },
-  { name: "Thai Tea", href: ROUTES.MENU_ITEMS.DRINKS },
+  { name: "Tom Yum", translationKey: "specialtyTomYumName", href: ROUTES.MENU_ITEMS.TOM_YUM },
+  { name: "Pad Thai", translationKey: "specialtyPadThaiName", href: ROUTES.MENU_ITEMS.PAD_THAI },
+  { name: "Som Tam", translationKey: "specialtySomTamName", href: ROUTES.MENU_ITEMS.SOM_TAM },
+  { name: "Mango Sticky Rice", translationKey: "specialtyMangoStickyRiceName", href: ROUTES.MENU_ITEMS.DESSERTS },
+  { name: "Thai Tea", translationKey: "thaiTeaName", href: ROUTES.MENU_ITEMS.DRINKS },
 ] as const;
 
 export const INFORMATION_RESTAURANT = {

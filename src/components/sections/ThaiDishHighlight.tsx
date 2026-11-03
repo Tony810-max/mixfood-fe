@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { ArrowRight, ArrowUpRight } from "lucide-react";
 import { Link } from "react-router-dom";
@@ -14,13 +14,18 @@ import somTam from "@/assets/som-tum.jpg";
 import mangoRice from "@/assets/mango-sticky-rice.jpg";
 import { SectionHeading } from "./SectionHeading";
 
-/** Hover-intent only applies to devices that really hover; touch keeps tap-to-select. */
-const canHover = () => typeof window !== "undefined" && typeof window.matchMedia === "function" && window.matchMedia("(hover: hover)").matches;
-
 const ThaiDishHighlight = () => {
   const { t } = useLanguage();
   const copy = useSiteCopy();
   const [active, setActive] = useState(0);
+  const preview = useRef<HTMLDivElement>(null);
+  const selectDish = (index: number) => {
+    setActive(index);
+    const bounds = preview.current?.getBoundingClientRect();
+    if (bounds && (bounds.bottom < 96 || bounds.top > window.innerHeight)) {
+      preview.current?.scrollIntoView?.({ block: 'center', behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth' });
+    }
+  };
   const dishes = [
     { name: t.specialtyTomYumName, subtitle: t.specialtyTomYumVietnamese, description: t.specialtyTomYumDesc, image: tomYum, href: ROUTES.MENU_ITEMS.TOM_YUM },
     { name: t.specialtyPadThaiName, subtitle: t.specialtyPadThaiVietnamese, description: t.specialtyPadThaiDesc, image: padThai, href: ROUTES.MENU_ITEMS.PAD_THAI },
@@ -49,7 +54,7 @@ const ThaiDishHighlight = () => {
         />
 
         <Reveal className="grid items-stretch gap-8 lg:grid-cols-[1.05fr_1fr] lg:gap-14">
-          <div className="relative aspect-[4/3] overflow-hidden rounded-2xl bg-secondary shadow-layered lg:aspect-auto lg:min-h-[32rem]">
+          <div ref={preview} className="relative aspect-[4/3] scroll-mt-28 overflow-hidden rounded-2xl bg-secondary shadow-layered lg:aspect-auto lg:min-h-[32rem]">
             <AnimatePresence initial={false}>
               <motion.img
                 key={dish.image}
@@ -89,9 +94,6 @@ const ThaiDishHighlight = () => {
               <Stagger className="divide-y divide-border" stagger={0.07} y={12}>
                 {dishes.map((entry, index) => {
                   const isActive = active === index;
-                  const hoverSelect = () => {
-                    if (canHover()) setActive(index);
-                  };
                   return (
                     <StaggerItem key={entry.href} className="relative">
                       {isActive && (
@@ -105,9 +107,8 @@ const ThaiDishHighlight = () => {
                       <button
                         type="button"
                         aria-pressed={isActive}
-                        onClick={() => setActive(index)}
-                        onMouseEnter={hoverSelect}
-                        onFocus={hoverSelect}
+                        onClick={() => selectDish(index)}
+                        onFocus={() => setActive(index)}
                         className={cn(
                           "group relative flex min-h-24 w-full items-center gap-4 px-3 py-4 text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring sm:px-5",
                           !isActive && "hover:bg-secondary/60",
@@ -135,7 +136,7 @@ const ThaiDishHighlight = () => {
               </Stagger>
             </div>
             <Button asChild size="lg" className="mt-6 w-full sm:w-auto sm:self-start">
-              <Link to={`${ROUTES.MENU}?q=${encodeURIComponent(dish.name)}`}>
+              <Link to={dish.href}>
                 {copy.exploreDish}
                 <ArrowRight aria-hidden="true" />
               </Link>

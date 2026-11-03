@@ -7,7 +7,9 @@ interface DishListProps {
   duplicate?: boolean;
 }
 
-const DishList = ({ duplicate = false }: DishListProps) => (
+const DishList = ({ duplicate = false }: DishListProps) => {
+  const { t } = useLanguage();
+  return (
   <ul
     aria-hidden={duplicate ? true : undefined}
     className="flex shrink-0 items-center"
@@ -19,13 +21,14 @@ const DishList = ({ duplicate = false }: DishListProps) => (
           tabIndex={duplicate ? -1 : undefined}
           className="inline-flex min-h-11 items-center rounded-sm px-1 font-serif text-base italic text-foreground transition-colors hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
         >
-          {dish.name}
+          {t[dish.translationKey]}
         </Link>
         <span aria-hidden="true" className="mx-6 size-1.5 shrink-0 rotate-45 bg-brass" />
       </li>
     ))}
   </ul>
-);
+  );
+};
 
 /**
  * Slow marquee of the existing signature dishes (same list and links as the footer).

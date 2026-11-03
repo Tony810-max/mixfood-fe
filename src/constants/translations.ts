@@ -28,6 +28,7 @@ export const translations = {
     somTum: "Som Tum Salad",
     somTumDesc: "Green papaya, dried shrimp, peanuts, chili-lime dressing.",
     mangoRice: "Mango Sticky Rice",
+    thaiTeaName: "Thai Tea",
     mangoRiceDesc: "Sweet coconut sticky rice, fresh mango, coconut cream.",
     heroTomYum: "Tom Yum Goong",
     heroTomYumDesc: "Our signature spicy & sour soup with tiger prawns.",
@@ -139,19 +140,19 @@ export const translations = {
     mangoStickyRiceDesc:
       "Sweet dessert with ripe mango combined with sticky coconut rice and fresh shredded coconut.",
     specialtyTomYumName: "Tomyum with Seafood",
-    specialtyTomYumVietnamese: "Tomyum Hải sản",
+    specialtyTomYumVietnamese: "Thai seafood soup",
     specialtyTomYumDesc:
       "Hot and sour Tomyum broth with fresh seafood, mushrooms, lemongrass and Thai herbs.",
     specialtyPadThaiName: "Pad Thai with Seafood",
-    specialtyPadThaiVietnamese: "Pad Thai Hải sản",
+    specialtyPadThaiVietnamese: "Thai seafood stir-fried noodles",
     specialtyPadThaiDesc:
       "Thai stir-fried rice noodles with fresh seafood, egg, bean sprouts, peanuts and tamarind sauce.",
     specialtySomTamName: "Papaya Salad with Tiny Shrimp",
-    specialtySomTamVietnamese: "Sontam tép",
+    specialtySomTamVietnamese: "Thai papaya salad with tiny shrimp",
     specialtySomTamDesc:
       "Crisp green papaya salad tossed with tiny shrimp, tomato, peanuts, chili and fish sauce.",
     specialtyMangoStickyRiceName: "Mango Sticky Rice",
-    specialtyMangoStickyRiceVietnamese: "Xôi Xoài",
+    specialtyMangoStickyRiceVietnamese: "Mango with coconut sticky rice",
     specialtyMangoStickyRiceDesc:
       "Sweet sticky rice with creamy coconut milk, served with ripe mango and toasted mung beans.",
     rating: "Rating",
@@ -429,6 +430,7 @@ export const translations = {
     somTum: "Gỏi Som Tum",
     somTumDesc: "Đu đủ xanh, tôm khô, đậu phộng, nước trộn chua cay.",
     mangoRice: "Xôi Xoài",
+    thaiTeaName: "Trà Thái",
     mangoRiceDesc: "Xôi dừa ngọt, xoài tươi, kem dừa.",
     heroTomYum: "Tom Yum Goong",
     heroTomYumDesc: "Canh chua cay đặc trưng với tôm sú.",

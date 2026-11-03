@@ -19,6 +19,17 @@ beforeEach(() => { document.cookie = 'lang=vn;path=/'; });
 afterEach(() => { cleanup(); vi.unstubAllGlobals(); });
 
 describe('Recruitment discovery', () => {
+  it('discovers a custom position and its distinct part-time and full-time shifts', async () => {
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue(response([{ ...job, id: 8, position: 'CUSTOM_8', nameVi: 'Lễ tân', nameEn: 'Receptionist', employmentTypes: ['PART_TIME', 'FULL_TIME'], workingShifts: [
+      { employmentType: 'PART_TIME', startTime: '17:00', endTime: '22:00' },
+      { employmentType: 'FULL_TIME', startTime: '09:00', endTime: '18:00' },
+    ] }])));
+    show();
+    expect(await screen.findByRole('link', { name: 'Lễ tân' })).toHaveAttribute('href', '/careers/position-8');
+    expect(screen.getByText(/Bán thời gian: 17:00.*22:00/)).toBeInTheDocument();
+    expect(screen.getByText(/Toàn thời gian: 09:00.*18:00/)).toBeInTheDocument();
+    expect(screen.getByRole('option', { name: 'Lễ tân' })).toBeInTheDocument();
+  });
   it('shows configured working hours and hides paused positions', async () => {
     vi.stubGlobal('fetch', vi.fn().mockResolvedValue(response([
       { ...job, workingHours: '17:00–22:00' },

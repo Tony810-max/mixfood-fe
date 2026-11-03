@@ -1,7 +1,7 @@
-import { useUiText } from '@/contexts/LanguageContext';
+import { useLanguage, useUiText } from '@/contexts/LanguageContext';
 import { useState, type FormEvent } from 'react';
 import { API_CONFIG } from '@/constants';
-import { RECRUITMENT_ROLES, type Recruitment } from '@/constants/recruitment';
+import { getRecruitmentName, type Recruitment } from '@/constants/recruitment';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -15,6 +15,7 @@ export function ApplicationForm({ positions, selectedId, onSelect }: {
   onSelect: (id: number) => void;
 }) {
   const ui = useUiText();
+  const { lang } = useLanguage();
   const selectedPosition = positions.find((job) => job.id === selectedId);
   const employmentTypes = selectedPosition?.employmentTypes ?? ['PART_TIME', 'FULL_TIME'];
   const [preferredType, setPreferredType] = useState('PART_TIME');
@@ -38,6 +39,7 @@ export function ApplicationForm({ positions, selectedId, onSelect }: {
         body: JSON.stringify({
           positionId: selectedId,
           employmentType,
+          locale: lang === 'vn' ? 'vi' : 'en',
           fullName: String(values.get('fullName') ?? '').trim(),
           phone: String(values.get('phone') ?? '').trim(),
           email: String(values.get('email') ?? '').trim(),
@@ -49,7 +51,7 @@ export function ApplicationForm({ positions, selectedId, onSelect }: {
         if (response.status === 429) throw new Error(ui("Bạn đã gửi nhiều lần. Vui lòng chờ một phút rồi thử lại."));
         const data = await response.json().catch(() => null);
         throw new Error(response.status === 400 && typeof data?.message === 'string'
-          ? data.message : ui("Chưa gửi được hồ sơ. Vui lòng kiểm tra thông tin và thử lại."));
+          ? ui(data.message) : ui("Chưa gửi được hồ sơ. Vui lòng kiểm tra thông tin và thử lại."));
       }
       form.reset();
       setSent(true);
@@ -68,8 +70,9 @@ export function ApplicationForm({ positions, selectedId, onSelect }: {
     {sent && <div role="status" className="mt-6 flex gap-3 rounded-xl border border-success/30 bg-success/10 p-4 text-success"><CheckCircle2 aria-hidden="true" className="size-5 shrink-0" /><p>{ui("Đã nhận hồ sơ của bạn. Mix Food sẽ liên hệ qua số điện thoại hoặc email đã cung cấp.") }</p></div>}
     <form onSubmit={submit} className="mt-6 space-y-5">
       <fieldset disabled={pending} className="space-y-5 disabled:opacity-70">
-        <div className="space-y-2"><Label htmlFor="application-position">{ui("Vị trí ứng tuyển *") }</Label><NativeSelect id="application-position" name="positionId" required value={selectedId} onChange={(event) => onSelect(Number(event.target.value))}>{positions.map((job) => <option key={job.id} value={job.id}>{ui(RECRUITMENT_ROLES[job.position].vn)}</option>)}</NativeSelect></div>
+        <div className="space-y-2"><Label htmlFor="application-position">{ui("Vị trí ứng tuyển *") }</Label><NativeSelect id="application-position" name="positionId" required value={selectedId} onChange={(event) => onSelect(Number(event.target.value))}>{positions.map((job) => <option key={job.id} value={job.id}>{getRecruitmentName(job, lang, ui)}</option>)}</NativeSelect></div>
         <div className="space-y-2"><Label htmlFor="application-employment">{ui('Employment type')} *</Label><NativeSelect id="application-employment" name="employmentType" required value={employmentType} onChange={(event) => setPreferredType(event.target.value)}>{employmentTypes.map((type) => <option key={type} value={type}>{ui(type === 'PART_TIME' ? 'Part-time' : 'Full-time')}</option>)}</NativeSelect></div>
+        {selectedPosition?.workingShifts?.filter((shift) => shift.employmentType === employmentType).map((shift, index) => <p key={index} className="text-sm text-muted-foreground">{ui('Working hours')}: {shift.startTime}–{shift.endTime}{shift.endTime < shift.startTime ? ` (${ui('next day')})` : ''}</p>)}
         <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
           <div className="space-y-2"><Label htmlFor="application-name">{ui("Họ và tên *") }</Label><Input id="application-name" name="fullName" autoComplete="name" required minLength={2} maxLength={100} placeholder="Nguyễn Văn An" /></div>
           <div className="space-y-2"><Label htmlFor="application-phone">{ui("Số điện thoại *") }</Label><Input id="application-phone" name="phone" type="tel" autoComplete="tel" required pattern="[+]?[0-9 \(\)\-]{9,20}" maxLength={20} onInput={(event) => { const digits = event.currentTarget.value.replace(/\D/g, '').length; event.currentTarget.setCustomValidity(digits >= 9 && digits <= 15 ? '' : ui("Vui lòng nhập số điện thoại gồm 9–15 chữ số.")); }} placeholder="0905 123 456" /></div>

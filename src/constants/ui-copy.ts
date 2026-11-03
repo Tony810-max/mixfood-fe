@@ -1,4 +1,13 @@
 export const uiCopy: Record<string, string> = {
+  'Working hours': 'Giờ làm việc',
+  '{position} jobs in Da Nang': 'Tuyển {position} tại Đà Nẵng',
+  'Apply for {position} at Mix Food in Da Nang. Vacancies: {count}.': 'Ứng tuyển {position} tại Mix Food Đà Nẵng. Số lượng: {count}.',
+  'Explore current openings at Mix Food. Choose a position and review its part-time or full-time working hours before applying.': 'Khám phá các vị trí đang tuyển tại Mix Food. Chọn vị trí và xem giờ làm bán thời gian hoặc toàn thời gian trước khi ứng tuyển.',
+  'Join the Mix Food team in Da Nang.': 'Gia nhập đội ngũ Mix Food tại Đà Nẵng.',
+  'next day': 'ngày hôm sau',
+  'This position is no longer accepting applications. Please choose another position.': 'Vị trí này đã tạm dừng tuyển dụng. Vui lòng chọn vị trí khác.',
+  'This position is no longer accepting applications.': 'Vị trí này đã tạm dừng tuyển dụng.',
+  'This employment type is no longer available. Please choose again.': 'Hình thức làm việc này không còn tuyển dụng. Vui lòng chọn lại.',
   'Four Thai flavours: sea salt and fish sauce, palm sugar, chillies, lime and tamarind': 'Bốn vị Thái: muối biển và nước mắm, đường thốt nốt, ớt, chanh và me',
   'Thai dishes at Mix Food in Da Nang': 'Các món ăn Thái tại Mix Food Đà Nẵng',
   'Mix Food Logo': 'Logo Mix Food', 'Address': 'Địa Chỉ', 'Phone': 'Điện Thoại', 'Password': 'Mật khẩu',
