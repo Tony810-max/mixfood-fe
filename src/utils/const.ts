@@ -6,17 +6,17 @@ export const ROUTES = {
   BOOKING_SUCCESS: "/booking/success",
   PROFILE: "/profile",
   RESERVATIONS: "/reservations",
-  ABOUT: "/#about",
+  ABOUT: "/about",
   CONTACT: "/#location",
   PRIVACY: "/privacy",
   TERMS: "/terms",
+  PRIVACY_TERMS: "/privacy-terms",
   CAREERS: "/careers",
   MENU_ITEMS: {
     TOM_YUM: "/menu?q=Tom%20Yum",
     PAD_THAI: "/menu?q=Pad%20Thai",
     SOM_TAM: "/menu?q=Som%20Tam",
     DESSERTS: "/menu?q=Mango%20Sticky%20Rice",
-    DRINKS: "/menu?q=Thai%20Tea",
   },
   AUTH: {
     LOGIN: "/login",
@@ -31,7 +31,6 @@ export const THAI_DISHES = [
   { name: "Pad Thai", translationKey: "specialtyPadThaiName", href: ROUTES.MENU_ITEMS.PAD_THAI },
   { name: "Som Tam", translationKey: "specialtySomTamName", href: ROUTES.MENU_ITEMS.SOM_TAM },
   { name: "Mango Sticky Rice", translationKey: "specialtyMangoStickyRiceName", href: ROUTES.MENU_ITEMS.DESSERTS },
-  { name: "Thai Tea", translationKey: "thaiTeaName", href: ROUTES.MENU_ITEMS.DRINKS },
 ] as const;
 
 export const INFORMATION_RESTAURANT = {

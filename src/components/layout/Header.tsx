@@ -27,6 +27,7 @@ const Header = () => {
   const navItems = [
     { label: t.home, href: ROUTES.HOME },
     { label: t.menu, href: ROUTES.MENU },
+    { label: t.footerAboutUs, href: ROUTES.ABOUT },
     { label: copy.careers, href: ROUTES.CAREERS },
   ];
 

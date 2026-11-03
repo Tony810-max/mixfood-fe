@@ -9,7 +9,7 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { useLogout } from "@/hooks/api/useAuth";
 import { cn } from "@/lib/utils";
 import { INFORMATION_RESTAURANT, ROUTES } from "@/utils/const";
-import { Calendar, Home, LogOut, Menu, Phone, User, UserPlus, UtensilsCrossed, X, type LucideIcon } from "lucide-react";
+import { Calendar, Home, Info, LogOut, Menu, Phone, User, UserPlus, UtensilsCrossed, X, type LucideIcon } from "lucide-react";
 import { Link } from "react-router-dom";
 
 interface MobileNavProps {
@@ -18,7 +18,7 @@ interface MobileNavProps {
   setMobileOpen: (open: boolean) => void;
 }
 
-const NAV_ICONS: LucideIcon[] = [Home, UtensilsCrossed, User];
+const NAV_ICONS: LucideIcon[] = [Home, UtensilsCrossed, Info, User];
 
 const rowClass =
   "group flex min-h-14 w-full items-center gap-4 rounded-xl border border-transparent px-4 text-left text-base font-medium text-foreground transition-colors hover:bg-accent/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring";
